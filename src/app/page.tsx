@@ -21,6 +21,7 @@ export default function HomePage() {
 	const [errorMessage, setErrorMessage] = useState("");
 
 	async function handleSubmitUrl(submittedUrl: string) {
+		setUrl(submittedUrl);
 		setRequestState("loading");
 		setErrorMessage("");
 		setReport(null);
