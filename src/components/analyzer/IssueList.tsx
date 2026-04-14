@@ -34,6 +34,15 @@ function SeveritySection({ severity, issues }: SeveritySectionProps) {
 
 // Renders accessibility issues grouped by severity level.
 export function IssueList({ issues }: IssueListProps) {
+	if (issues.length === 0) {
+		return (
+			<section className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
+				<h2 className="text-xl font-semibold text-zinc-100">Issues</h2>
+				<p className="mt-2 text-sm text-zinc-400">No automated issues were found in this scan.</p>
+			</section>
+		);
+	}
+
 	const groupedIssues = groupIssuesBySeverity(issues);
 
 	return (
