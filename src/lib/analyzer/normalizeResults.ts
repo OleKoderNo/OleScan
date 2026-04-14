@@ -1,6 +1,7 @@
 import type { AuditIssue, RawAuditResult, Severity } from "@/types/audit";
 
 const ruleTitleMap: Record<string, string> = {
+	"alt-text-quality": "Alternative text should be meaningful",
 	"button-name": "Buttons must have an accessible name",
 	"document-title": "Documents must have a title",
 	"html-has-lang": "HTML element must have a language",

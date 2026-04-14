@@ -137,5 +137,22 @@ export async function runAudit(html: string): Promise<RawAuditResult> {
 		});
 	}
 
+	const weakAltMatch = html.match(/<img\b[^>]*\balt=["'](image|photo|picture)["'][^>]*>/i);
+
+	if (weakAltMatch) {
+		issues.push({
+			id: "alt-text-quality",
+			impact: "moderate",
+			description: "An image appears to use generic alternative text that may not be meaningful.",
+			help: "Replace generic alt text with a description that reflects the image's purpose in context.",
+			nodes: [
+				{
+					target: ["img"],
+					html: weakAltMatch[0],
+				},
+			],
+		});
+	}
+
 	return { issues };
 }
