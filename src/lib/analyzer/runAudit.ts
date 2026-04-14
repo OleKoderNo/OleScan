@@ -117,5 +117,25 @@ export async function runAudit(html: string): Promise<RawAuditResult> {
 		});
 	}
 
+	const unlabeledInputMatch = html.match(
+		/<input\b(?![^>]*\btype=["']hidden["'])(?![^>]*\baria-label=)(?![^>]*\baria-labelledby=)[^>]*>/i,
+	);
+
+	if (unlabeledInputMatch) {
+		issues.push({
+			id: "label",
+			impact: "serious",
+			description: "A form input appears to be missing an obvious accessible label.",
+			help: "Associate the input with a visible label or provide an accessible name.",
+			helpUrl: "https://dequeuniversity.com/rules/axe/4.10/label",
+			nodes: [
+				{
+					target: ["input"],
+					html: unlabeledInputMatch[0],
+				},
+			],
+		});
+	}
+
 	return { issues };
 }
