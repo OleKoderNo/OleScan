@@ -37,3 +37,26 @@ export type AuditReport = {
 	issues: AuditIssue[];
 	manualChecks: ManualCheck[];
 };
+
+// Raw node target from an underlying audit engine.
+// This shape is intentionally tool-like and will later be normalized.
+export type RawAuditNode = {
+	target: string[];
+	html?: string;
+};
+
+// Raw issue from the audit engine before OleScan converts it
+// into a cleaner UI-friendly issue object.
+export type RawAuditIssue = {
+	id: string;
+	impact?: Severity;
+	description: string;
+	help: string;
+	helpUrl?: string;
+	nodes: RawAuditNode[];
+};
+
+// Raw audit result returned by the analysis engine layer.
+export type RawAuditResult = {
+	issues: RawAuditIssue[];
+};
