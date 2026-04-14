@@ -83,6 +83,14 @@ export default function HomePage() {
 							<p className="mt-2 break-all text-sm text-zinc-300 sm:text-base">{report.url}</p>
 						</div>
 
+						<div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
+							<p className="text-sm leading-6 text-zinc-300">
+								This report is based on an automated heuristic scan. It can help surface likely
+								accessibility issues, but it does not replace manual review or formal WCAG
+								conformance testing.
+							</p>
+						</div>
+
 						<SummaryCards summary={report.summary} />
 						<IssueList issues={report.issues} />
 						<ManualChecks checks={report.manualChecks} />
