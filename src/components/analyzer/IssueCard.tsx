@@ -5,7 +5,8 @@ type IssueCardProps = {
 	issue: AuditIssue;
 };
 
-// Displays one accessibility issue with context and suggested fix.
+// Displays one accessibility issue with context, suggested fix,
+// and all known failing occurrences for that rule.
 export function IssueCard({ issue }: IssueCardProps) {
 	return (
 		<article className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-5">
@@ -28,21 +29,40 @@ export function IssueCard({ issue }: IssueCardProps) {
 					<p className="mt-2 text-sm leading-6 text-zinc-300">{issue.help}</p>
 				</div>
 
-				{issue.selector && (
+				{issue.occurrences.length > 0 && (
 					<div>
-						<h4 className="text-sm font-semibold text-zinc-200">Selector</h4>
-						<code className="mt-2 block overflow-x-auto rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-300">
-							{issue.selector}
-						</code>
-					</div>
-				)}
+						<h4 className="text-sm font-semibold text-zinc-200">Affected elements</h4>
 
-				{issue.htmlSnippet && (
-					<div>
-						<h4 className="text-sm font-semibold text-zinc-200">HTML snippet</h4>
-						<code className="mt-2 block overflow-x-auto rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-300">
-							{issue.htmlSnippet}
-						</code>
+						<ul className="mt-3 space-y-3">
+							{issue.occurrences.map((occurrence, index) => (
+								<li
+									key={`${issue.id}-${index}`}
+									className="rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-3"
+								>
+									{occurrence.selector && (
+										<div>
+											<p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+												Selector
+											</p>
+											<code className="mt-1 block overflow-x-auto text-sm text-zinc-300">
+												{occurrence.selector}
+											</code>
+										</div>
+									)}
+
+									{occurrence.htmlSnippet && (
+										<div className="mt-3">
+											<p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+												HTML snippet
+											</p>
+											<code className="mt-1 block overflow-x-auto text-sm text-zinc-300">
+												{occurrence.htmlSnippet}
+											</code>
+										</div>
+									)}
+								</li>
+							))}
+						</ul>
 					</div>
 				)}
 
