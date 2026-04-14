@@ -7,7 +7,7 @@
 ![AI Assisted](https://img.shields.io/badge/Development-AI--Assisted-purple)
 ![Status](https://img.shields.io/badge/Status-Active_Development-orange)
 
-OleScan is a developer-focused accessibility auditing tool that analyzes public webpages and produces structured accessibility reports with severity-based issue grouping and actionable guidance.
+OleScan is a developer-focused accessibility auditing tool that analyzes public webpages and produces structured accessibility reports with severity-based issue grouping, multiple affected elements per issue, and actionable guidance.
 
 The goal of this project is to demonstrate accessibility knowledge, frontend architecture skills, API design, and modern AI-assisted engineering workflows in a real-world portfolio application.
 
@@ -22,6 +22,8 @@ Implemented:
 - URL validation
 - server-side HTML analysis pipeline
 - axe-core based server-side accessibility analysis
+- Playwright-based browser accessibility analysis
+- dual-engine scan mode selection
 - structured accessibility issue reporting
 - severity-based scoring model
 - grouped issue presentation
@@ -29,15 +31,16 @@ Implemented:
 - manual accessibility review reminders
 - scan lifecycle states (idle, loading, success, error)
 - stale report detection when editing scanned URLs
-- report metadata display (URL + timestamp)
+- report metadata display
+- browser-mode reporting note and mode-specific metadata
 
 Planned:
 
-- Playwright-based browser audit execution
+- screenshot examples in README
 - report export options (JSON / PDF)
 - scan comparison between runs
 - accessibility scoring transparency panel
-- deeper report metadata and debugging tools
+- richer debugging metadata
 
 ---
 
@@ -58,25 +61,34 @@ The project intentionally focuses on **developer experience**, not just automate
 
 # Features
 
+## Dual Engine Scanning
+
+OleScan supports two analysis modes:
+
+### Server DOM scan
+
+A faster mode based on fetched HTML and server-side DOM analysis using `axe-core + jsdom`.
+
+### Browser scan
+
+A more realistic mode based on a live rendered page using `axe-core + Playwright`.
+
+This makes the project more useful across both static and dynamic sites.
+
 ## URL Analysis Pipeline
 
-Users can submit a public webpage URL and receive a structured accessibility report generated through a server-side analysis pipeline.
+Users can submit a public webpage URL and receive a structured accessibility report generated through a layered analysis pipeline.
 
 Pipeline flow:
 
 URL input  
 → validation  
-→ HTML fetch  
-→ audit engine  
+→ engine selection  
+→ HTML fetch or browser navigation  
+→ audit execution  
 → result normalization  
 → severity scoring  
 → structured report response
-
-## axe-core Powered Analysis
-
-OleScan now uses **axe-core** as the primary accessibility engine for automated rule detection.
-
-This gives the project a stronger and more realistic audit foundation than a custom heuristic-only approach.
 
 ## Severity-Based Issue Grouping
 
@@ -132,145 +144,3 @@ These reminders reinforce real-world accessibility workflows.
 The interface detects when a report becomes outdated after editing the scanned URL and prompts the user to rescan.
 
 This prevents misleading results and improves usability.
-
----
-
-# Tech Stack
-
-Frontend:
-
-- Next.js (App Router)
-- TypeScript (strict mode)
-- Tailwind CSS
-
-Backend:
-
-- Next.js Route Handlers
-- server-side HTML fetching
-- axe-core accessibility analysis
-- jsdom DOM environment
-
-Browser audit foundation:
-
-- Playwright
-
----
-
-# Architecture Overview
-
-OleScan uses a layered analyzer pipeline designed to separate responsibilities clearly.
-
-Pipeline flow:
-
-URL input  
-→ validation  
-→ HTML fetch  
-→ axe-core audit execution in jsdom  
-→ result normalization  
-→ severity scoring  
-→ structured report response
-
-Core modules:
-
-lib/analyzer/
-
-validateUrl.ts  
-fetchPageHtml.ts  
-runAudit.ts  
-normalizeResults.ts  
-buildSummary.ts  
-getManualChecks.ts
-
-Responsibilities are intentionally isolated so the audit engine can evolve independently from the UI layer, including future upgrades from server-side DOM analysis to browser-based Playwright scanning.
-
----
-
-# Accessibility Philosophy
-
-OleScan does not attempt to replace manual accessibility audits.
-
-Instead, it:
-
-- identifies likely accessibility risks
-- highlights structural issues
-- prioritizes fixes by severity
-- reminds developers what automated tools cannot detect
-
-The report score is a heuristic indicator, **not a compliance certification**.
-
----
-
-# AI-Assisted Development
-
-OleScan was intentionally developed using AI-assisted engineering workflows.
-
-The goal of this project is not only to demonstrate accessibility tooling, but also to demonstrate how modern developers can collaborate effectively with AI to improve productivity, iteration speed, and architectural quality.
-
-AI assistance was used for:
-
-- architectural brainstorming
-- component structure planning
-- TypeScript modeling
-- API route design
-- accessibility rule exploration
-- UX wording refinement
-- documentation drafting
-- implementation support during iteration and debugging
-
-All generated output was reviewed, validated, and adjusted manually.
-
-The project reflects a workflow where AI accelerates implementation while the developer remains responsible for:
-
-- design decisions
-- accessibility interpretation
-- system structure
-- code quality
-- correctness verification
-
-This mirrors how AI is increasingly used in professional frontend environments to improve productivity without replacing engineering judgment.
-
----
-
-# Roadmap
-
-Short term:
-
-- improve score explanation and transparency
-- expand report metadata and debugging context
-- polish issue card readability for dense results
-
-Mid term:
-
-- connect Playwright-based browser scanning
-- compare scan results between runs
-- support richer reporting workflows
-- improve scan accuracy for dynamic pages
-
-Long term:
-
-- export reports as JSON or PDF
-- CI accessibility check integration
-- accessibility regression tracking
-- developer dashboard interface
-
----
-
-# Project Goals
-
-This project exists to demonstrate:
-
-- accessibility awareness beyond automated tooling
-- strong TypeScript architecture (strict mode)
-- API route design using Next.js App Router
-- reusable UI component structure
-- product-level UX thinking
-- analyzer pipeline design
-- modern AI-assisted engineering workflows
-
----
-
-# Disclaimer
-
-OleScan provides heuristic accessibility insights based on automated analysis techniques.
-
-It does **not** certify WCAG compliance and should be used as a development support tool alongside manual accessibility testing.
