@@ -23,9 +23,8 @@ export default function HomePage() {
 	function handleUrlChange(nextUrl: string) {
 		setUrl(nextUrl);
 
-		if (requestState === "success" || requestState === "error") {
+		if (requestState === "error") {
 			setRequestState("idle");
-			setReport(null);
 			setErrorMessage("");
 		}
 	}
@@ -34,7 +33,6 @@ export default function HomePage() {
 		setUrl(submittedUrl);
 		setRequestState("loading");
 		setErrorMessage("");
-		setReport(null);
 
 		try {
 			const response = await fetch("/api/analyze", {
@@ -65,6 +63,8 @@ export default function HomePage() {
 
 	const formattedScannedAt = report ? new Date(report.scannedAt).toLocaleString() : "";
 
+	const hasStaleReport = report !== null && url.trim() !== report.url;
+
 	return (
 		<main className="min-h-screen bg-zinc-950 text-zinc-100">
 			<section className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-12">
@@ -85,11 +85,20 @@ export default function HomePage() {
 					<UrlForm value={url} onChange={handleUrlChange} onSubmitUrl={handleSubmitUrl} />
 				</section>
 
-				{requestState === "idle" && <EmptyState />}
+				{hasStaleReport && (
+					<div className="rounded-2xl border border-yellow-800/60 bg-yellow-950/20 p-4">
+						<p className="text-sm leading-6 text-yellow-100">
+							The current report reflects the last scanned URL. Run a new scan to update the results
+							for the edited input.
+						</p>
+					</div>
+				)}
+
+				{requestState === "idle" && !report && <EmptyState />}
 				{requestState === "loading" && <LoadingState />}
 				{requestState === "error" && <ErrorState message={errorMessage} />}
 
-				{requestState === "success" && report && (
+				{report && requestState === "success" && (
 					<section className="space-y-6">
 						<div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
 							<h2 className="text-lg font-semibold text-zinc-100">Scan complete</h2>
