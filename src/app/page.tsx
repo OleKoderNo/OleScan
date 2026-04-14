@@ -13,6 +13,9 @@ import type { AuditReport } from "@/types/audit";
 
 type RequestState = "idle" | "loading" | "success" | "error";
 
+const staleReportMessage =
+	"The current report reflects the last scanned URL. Run a new scan to update the results for the edited input.";
+
 // Main app page.
 // Handles the request lifecycle and renders report components when data exists.
 export default function HomePage() {
@@ -87,10 +90,7 @@ export default function HomePage() {
 
 				{hasStaleReport && (
 					<div className="rounded-2xl border border-yellow-800/60 bg-yellow-950/20 p-4">
-						<p className="text-sm leading-6 text-yellow-100">
-							The current report reflects the last scanned URL. Run a new scan to update the results
-							for the edited input.
-						</p>
+						<p className="text-sm leading-6 text-yellow-100">{staleReportMessage}</p>
 					</div>
 				)}
 
