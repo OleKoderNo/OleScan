@@ -12,11 +12,6 @@ type UrlFormProps = {
 	onSubmitUrl: (url: string) => void;
 };
 
-const modeOptionLabelMap: Record<AuditEngineMode, string> = {
-	"server-dom": "Server DOM scan",
-	browser: "Browser scan (Playwright)",
-};
-
 const modeHelpTextMap: Record<AuditEngineMode, string> = {
 	"server-dom": "Faster scan based on fetched HTML and server-side DOM analysis.",
 	browser: "Slower but more realistic scan using a live browser for dynamic pages.",
@@ -89,8 +84,11 @@ export function UrlForm({
 						onChange={(event) => onEngineModeChange(event.target.value as AuditEngineMode)}
 						className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm text-zinc-100 outline-none transition focus:border-zinc-500"
 					>
-						<option value="server-dom">{modeOptionLabelMap["server-dom"]}</option>
-						<option value="browser">{modeOptionLabelMap.browser}</option>
+						<option value="server-dom">Server DOM (recommended)</option>
+
+						{typeof window !== "undefined" && window.location.hostname === "localhost" && (
+							<option value="browser">Browser (Playwright)</option>
+						)}
 					</select>
 
 					<p className="text-sm leading-6 text-zinc-400">{modeHelpTextMap[engineMode]}</p>
