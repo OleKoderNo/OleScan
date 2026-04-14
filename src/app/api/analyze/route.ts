@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
 
 		const report: AuditReport = {
 			url,
+			scannedAt: new Date().toISOString(),
 			summary: buildSummary(issues),
 			issues,
 			manualChecks: getManualChecks(),
