@@ -31,7 +31,9 @@ export function IssueCard({ issue }: IssueCardProps) {
 
 				{issue.occurrences.length > 0 && (
 					<div>
-						<h4 className="text-sm font-semibold text-zinc-200">Affected elements</h4>
+						<h4 className="text-sm font-semibold text-zinc-200">
+							Affected elements ({issue.occurrences.length})
+						</h4>
 
 						<ul className="mt-3 space-y-3">
 							{issue.occurrences.map((occurrence, index) => (
@@ -39,14 +41,29 @@ export function IssueCard({ issue }: IssueCardProps) {
 									key={`${issue.id}-${index}`}
 									className="rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-3"
 								>
+									<p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+										Occurrence {index + 1}
+									</p>
+
 									{occurrence.selector && (
-										<div>
+										<div className="mt-3">
 											<p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
 												Selector
 											</p>
 											<code className="mt-1 block overflow-x-auto text-sm text-zinc-300">
 												{occurrence.selector}
 											</code>
+										</div>
+									)}
+
+									{occurrence.failureSummary && (
+										<div className="mt-3">
+											<p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+												Failure summary
+											</p>
+											<p className="mt-1 text-sm leading-6 text-zinc-300">
+												{occurrence.failureSummary}
+											</p>
 										</div>
 									)}
 
