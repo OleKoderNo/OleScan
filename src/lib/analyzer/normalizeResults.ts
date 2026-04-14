@@ -7,20 +7,19 @@ const ruleTitleMap: Record<string, string> = {
 // Converts raw audit engine output into OleScan's normalized issue format.
 // This keeps UI components independent from engine-specific data shapes.
 export function normalizeResults(result: RawAuditResult): AuditIssue[] {
-	return result.issues.map((issue) => {
-		const firstNode = issue.nodes[0];
-
-		return {
-			id: issue.id,
-			title: formatRuleTitle(issue.id, issue.help),
-			severity: normalizeSeverity(issue.impact),
-			description: buildDescription(issue.description, firstNode?.failureSummary),
-			help: issue.help,
-			helpUrl: issue.helpUrl,
-			selector: firstNode?.target[0],
-			htmlSnippet: firstNode?.html,
-		};
-	});
+	return result.issues.map((issue) => ({
+		id: issue.id,
+		title: formatRuleTitle(issue.id, issue.help),
+		severity: normalizeSeverity(issue.impact),
+		description: issue.description,
+		help: issue.help,
+		helpUrl: issue.helpUrl,
+		occurrences: issue.nodes.map((node) => ({
+			selector: node.target[0],
+			htmlSnippet: node.html,
+			failureSummary: node.failureSummary,
+		})),
+	}));
 }
 
 function normalizeSeverity(impact?: Severity): Severity {
@@ -39,12 +38,4 @@ function formatRuleTitle(ruleId: string, help: string): string {
 	}
 
 	return help;
-}
-
-function buildDescription(description: string, failureSummary?: string): string {
-	if (!failureSummary) {
-		return description;
-	}
-
-	return `${description} ${failureSummary}`;
 }

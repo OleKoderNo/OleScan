@@ -1,6 +1,12 @@
 // Allowed severity levels in the normalized report.
 export type Severity = "critical" | "serious" | "moderate" | "minor";
 
+export type AuditIssueOccurrence = {
+	selector?: string;
+	htmlSnippet?: string;
+	failureSummary?: string;
+};
+
 // A single accessibility issue shown in the report UI.
 export type AuditIssue = {
 	id: string;
@@ -9,8 +15,7 @@ export type AuditIssue = {
 	description: string;
 	help: string;
 	helpUrl?: string;
-	selector?: string;
-	htmlSnippet?: string;
+	occurrences: AuditIssueOccurrence[];
 };
 
 // Summary information shown at the top of the report.

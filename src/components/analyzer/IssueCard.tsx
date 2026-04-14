@@ -1,11 +1,61 @@
 import { SeverityBadge } from "@/components/analyzer/SeverityBadge";
-import type { AuditIssue } from "@/types/audit";
+import type { AuditIssue, AuditIssueOccurrence } from "@/types/audit";
 
 type IssueCardProps = {
 	issue: AuditIssue;
 };
 
-// Displays one accessibility issue with context and suggested fix.
+type OccurrenceItemProps = {
+	issueId: string;
+	index: number;
+	occurrence: AuditIssueOccurrence;
+};
+
+// Displays one affected element inside an issue.
+function OccurrenceItem({ issueId, index, occurrence }: OccurrenceItemProps) {
+	return (
+		<li
+			key={`${issueId}-${index}`}
+			className="rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-3"
+		>
+			<p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+				Occurrence {index + 1}
+			</p>
+
+			{occurrence.selector && (
+				<div className="mt-3">
+					<p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Selector</p>
+					<code className="mt-1 block overflow-x-auto text-sm text-zinc-300">
+						{occurrence.selector}
+					</code>
+				</div>
+			)}
+
+			{occurrence.failureSummary && (
+				<div className="mt-3">
+					<p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+						Failure summary
+					</p>
+					<p className="mt-1 text-sm leading-6 text-zinc-300">{occurrence.failureSummary}</p>
+				</div>
+			)}
+
+			{occurrence.htmlSnippet && (
+				<div className="mt-3">
+					<p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+						HTML snippet
+					</p>
+					<code className="mt-1 block overflow-x-auto text-sm text-zinc-300">
+						{occurrence.htmlSnippet}
+					</code>
+				</div>
+			)}
+		</li>
+	);
+}
+
+// Displays one accessibility issue with context, suggested fix,
+// and all known failing occurrences for that rule.
 export function IssueCard({ issue }: IssueCardProps) {
 	return (
 		<article className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-5">
@@ -28,21 +78,22 @@ export function IssueCard({ issue }: IssueCardProps) {
 					<p className="mt-2 text-sm leading-6 text-zinc-300">{issue.help}</p>
 				</div>
 
-				{issue.selector && (
+				{issue.occurrences.length > 0 && (
 					<div>
-						<h4 className="text-sm font-semibold text-zinc-200">Selector</h4>
-						<code className="mt-2 block overflow-x-auto rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-300">
-							{issue.selector}
-						</code>
-					</div>
-				)}
+						<h4 className="text-sm font-semibold text-zinc-200">
+							Affected elements ({issue.occurrences.length})
+						</h4>
 
-				{issue.htmlSnippet && (
-					<div>
-						<h4 className="text-sm font-semibold text-zinc-200">HTML snippet</h4>
-						<code className="mt-2 block overflow-x-auto rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-300">
-							{issue.htmlSnippet}
-						</code>
+						<ul className="mt-3 space-y-3">
+							{issue.occurrences.map((occurrence, index) => (
+								<OccurrenceItem
+									key={`${issue.id}-${index}`}
+									issueId={issue.id}
+									index={index}
+									occurrence={occurrence}
+								/>
+							))}
+						</ul>
 					</div>
 				)}
 
