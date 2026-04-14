@@ -11,7 +11,7 @@ import type { AuditReport } from "@/types/audit";
 // Current flow:
 // 1. validate URL
 // 2. fetch page HTML
-// 3. run audit engine
+// 3. run server-side audit engine
 // 4. normalize raw results
 // 5. build report summary
 // 6. return OleScan report
@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
 			url,
 			metadata: {
 				engine: "axe-core + jsdom",
+				engineMode: "server-dom",
 				scannedAt: new Date().toISOString(),
 				totalOccurrences,
 			},
