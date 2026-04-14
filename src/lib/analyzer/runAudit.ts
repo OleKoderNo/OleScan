@@ -10,6 +10,26 @@ import type { RawAuditIssue, RawAuditResult } from "@/types/audit";
 export async function runAudit(html: string): Promise<RawAuditResult> {
 	const issues: RawAuditIssue[] = [];
 
+	// Check for missing or empty page title.
+	// We use [\s\S]*? instead of the regex s-flag so this works in stricter TS setups.
+	const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+
+	if (!titleMatch || !titleMatch[1]?.trim()) {
+		issues.push({
+			id: "document-title",
+			impact: "serious",
+			description: "The page does not appear to have a meaningful document title.",
+			help: "Add a descriptive title element inside the document head.",
+			helpUrl: "https://dequeuniversity.com/rules/axe/4.10/document-title",
+			nodes: [
+				{
+					target: ["head > title"],
+					html: "<title></title>",
+				},
+			],
+		});
+	}
+
 	// Check for missing main landmark.
 	if (!html.includes("<main") && !html.includes("<main ")) {
 		issues.push({
@@ -28,7 +48,6 @@ export async function runAudit(html: string): Promise<RawAuditResult> {
 	}
 
 	// Check for images without alt attributes.
-	// This is intentionally simple for now and will not catch everything.
 	const imageWithoutAltMatch = html.match(/<img\b(?![^>]*\balt=)[^>]*>/i);
 
 	if (imageWithoutAltMatch) {

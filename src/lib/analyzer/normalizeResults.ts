@@ -1,8 +1,9 @@
 import type { AuditIssue, RawAuditResult, Severity } from "@/types/audit";
 
 const ruleTitleMap: Record<string, string> = {
-	"image-alt": "Images must have alternative text",
 	"button-name": "Buttons must have an accessible name",
+	"document-title": "Documents must have a title",
+	"image-alt": "Images must have alternative text",
 	"landmark-one-main": "Document should have one main landmark",
 };
 
