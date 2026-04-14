@@ -18,10 +18,16 @@ export function ManualChecks({ checks }: ManualChecksProps) {
 
 			<ul className="mt-6 grid gap-4 sm:grid-cols-2">
 				{checks.map((check) => (
-					<li key={check.id} className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-4">
-						<h3 className="text-base font-semibold text-zinc-100">{check.title}</h3>
+					<li key={check.id} className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-5">
+						<div className="space-y-3">
+							<h3 className="text-base font-semibold text-zinc-100">{check.title}</h3>
 
-						<p className="mt-2 text-sm leading-6 text-zinc-300">{check.description}</p>
+							<p className="text-sm leading-6 text-zinc-300">{check.description}</p>
+
+							<p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+								Requires human judgment
+							</p>
+						</div>
 					</li>
 				))}
 			</ul>
