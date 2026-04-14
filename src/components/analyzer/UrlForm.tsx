@@ -79,8 +79,8 @@ export function UrlForm({
 						onChange={(event) => onEngineModeChange(event.target.value as AuditEngineMode)}
 						className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm text-zinc-100 outline-none transition focus:border-zinc-500"
 					>
-						<option value="server-dom">Server DOM (faster)</option>
-						<option value="browser">Browser (Playwright)</option>
+						<option value="server-dom">Server DOM scan</option>
+						<option value="browser">Browser scan (Playwright)</option>
 					</select>
 				</div>
 			</div>
