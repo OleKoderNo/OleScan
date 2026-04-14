@@ -16,7 +16,9 @@ export function UrlForm({ onSubmitUrl }: UrlFormProps) {
 	function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 
-		const result = validateUrl(url);
+		const trimmedUrl = url.trim();
+
+		const result = validateUrl(trimmedUrl);
 
 		if (!result.isValid) {
 			setError(result.error ?? "Invalid URL");
@@ -25,7 +27,7 @@ export function UrlForm({ onSubmitUrl }: UrlFormProps) {
 
 		setError(null);
 
-		onSubmitUrl(url.trim());
+		onSubmitUrl(trimmedUrl);
 	}
 
 	return (
