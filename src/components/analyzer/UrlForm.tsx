@@ -1,19 +1,27 @@
 "use client";
 
 import { useState } from "react";
+import { validateUrl } from "@/lib/analyzer/validateUrl";
 
 type UrlFormProps = {
 	onSubmitUrl: (url: string) => void;
 };
 
-// URL form with local input state.
-// On submit, it passes the entered URL up to the page component.
-// Validation is not added yet because that will be its own step.
+// URL form with validation support.
+// This version integrates the shared validation utility
+// but does not yet display validation errors in the UI.
 export function UrlForm({ onSubmitUrl }: UrlFormProps) {
 	const [url, setUrl] = useState("");
 
 	function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault();
+
+		const result = validateUrl(url);
+
+		if (!result.isValid) {
+			return;
+		}
+
 		onSubmitUrl(url.trim());
 	}
 
