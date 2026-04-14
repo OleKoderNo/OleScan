@@ -20,6 +20,16 @@ export default function HomePage() {
 	const [report, setReport] = useState<AuditReport | null>(null);
 	const [errorMessage, setErrorMessage] = useState("");
 
+	function handleUrlChange(nextUrl: string) {
+		setUrl(nextUrl);
+
+		if (requestState === "success" || requestState === "error") {
+			setRequestState("idle");
+			setReport(null);
+			setErrorMessage("");
+		}
+	}
+
 	async function handleSubmitUrl(submittedUrl: string) {
 		setUrl(submittedUrl);
 		setRequestState("loading");
@@ -72,7 +82,7 @@ export default function HomePage() {
 				</header>
 
 				<section className="rounded-2xl border border-zinc-800 bg-zinc-900/70 p-6 shadow-sm">
-					<UrlForm value={url} onChange={setUrl} onSubmitUrl={handleSubmitUrl} />
+					<UrlForm value={url} onChange={handleUrlChange} onSubmitUrl={handleSubmitUrl} />
 				</section>
 
 				{requestState === "idle" && <EmptyState />}
