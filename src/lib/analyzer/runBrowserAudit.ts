@@ -31,7 +31,7 @@ const impactMap: Record<string, Severity> = {
 
 // Runs axe-core inside a live Playwright browser page.
 // This captures the rendered DOM instead of only fetched HTML.
-export async function runBrowserAudit(url: string): Promise<RawAuditResult> {
+export async function runBrowserAudit(url: string, delayMs = 500): Promise<RawAuditResult> {
 	const browser = await chromium.launch({
 		headless: true,
 	});
@@ -51,6 +51,10 @@ export async function runBrowserAudit(url: string): Promise<RawAuditResult> {
 		});
 
 		await page.waitForLoadState("networkidle");
+
+		if (delayMs > 0) {
+			await page.waitForTimeout(delayMs);
+		}
 
 		const result = await page.evaluate(async () => {
 			const browserWindow = window as Window &
