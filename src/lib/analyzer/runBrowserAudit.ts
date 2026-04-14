@@ -1,4 +1,5 @@
-import axe from "axe-core";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { chromium } from "playwright";
 import type { RawAuditResult, Severity } from "@/types/audit";
 
@@ -38,22 +39,30 @@ export async function runBrowserAudit(url: string): Promise<RawAuditResult> {
 	try {
 		const page = await browser.newPage();
 
+		const axeSource = await loadAxeSource();
+
+		await page.addInitScript({
+			content: axeSource,
+		});
+
 		await page.goto(url, {
-			waitUntil: "networkidle",
+			waitUntil: "domcontentloaded",
 			timeout: 30_000,
 		});
 
-		await page.addScriptTag({
-			content: axe.source,
-		});
+		await page.waitForLoadState("networkidle");
 
 		const result = await page.evaluate(async () => {
 			const browserWindow = window as Window &
 				typeof globalThis & {
-					axe: {
+					axe?: {
 						run: () => Promise<BrowserRunResult>;
 					};
 				};
+
+			if (!browserWindow.axe) {
+				throw new Error("axe was not available in the browser context");
+			}
 
 			return browserWindow.axe.run();
 		});
@@ -72,11 +81,18 @@ export async function runBrowserAudit(url: string): Promise<RawAuditResult> {
 				})),
 			})),
 		};
-	} catch {
-		throw new Error("Browser-based audit failed while analyzing the live page.");
+	} catch (error) {
+		console.error("Playwright browser audit error:", error);
+		throw error;
 	} finally {
 		await browser.close();
 	}
+}
+
+async function loadAxeSource(): Promise<string> {
+	const axePath = path.join(process.cwd(), "node_modules", "axe-core", "axe.min.js");
+
+	return readFile(axePath, "utf8");
 }
 
 function normalizeImpact(impact: string | null | undefined): Severity {

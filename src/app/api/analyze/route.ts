@@ -8,6 +8,8 @@ import { runBrowserAudit } from "@/lib/analyzer/runBrowserAudit";
 import { validateUrl } from "@/lib/analyzer/validateUrl";
 import type { AuditEngineMode, AuditReport } from "@/types/audit";
 
+export const runtime = "nodejs";
+
 // API route for accessibility analysis.
 // Supports both server DOM and browser-based audit modes.
 export async function POST(request: NextRequest) {
@@ -57,8 +59,9 @@ export async function POST(request: NextRequest) {
 
 		return NextResponse.json(report, { status: 200 });
 	} catch (error) {
-		const message =
-			error instanceof Error ? error.message : "Something went wrong while analyzing the URL.";
+		console.error("OleScan analyze route error:", error);
+
+		const message = error instanceof Error ? error.message : `Unknown error: ${String(error)}`;
 
 		return NextResponse.json(
 			{
