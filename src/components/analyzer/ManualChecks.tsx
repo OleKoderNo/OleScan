@@ -16,6 +16,13 @@ export function ManualChecks({ checks }: ManualChecksProps) {
 				</p>
 			</div>
 
+			<div className="mt-6 rounded-xl border border-zinc-800 bg-zinc-950/70 p-4">
+				<p className="text-sm leading-6 text-zinc-300">
+					A page can pass automated checks and still be frustrating to use. These reminders help
+					keep the report grounded in real accessibility work, not just rule matching.
+				</p>
+			</div>
+
 			<ul className="mt-6 grid gap-4 sm:grid-cols-2">
 				{checks.map((check, index) => (
 					<li key={check.id} className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-5">
