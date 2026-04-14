@@ -80,11 +80,23 @@ export default function HomePage() {
 						<div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
 							<h2 className="text-lg font-semibold text-zinc-100">Scan complete</h2>
 
-							<p className="mt-2 break-all text-sm text-zinc-300 sm:text-base">{report.url}</p>
+							<div className="mt-4 space-y-3">
+								<div>
+									<p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+										Scanned URL
+									</p>
+									<p className="mt-1 break-all text-sm text-zinc-300 sm:text-base">{report.url}</p>
+								</div>
 
-							<p className="mt-3 text-sm text-zinc-500">
-								Scanned at {new Date(report.scannedAt).toLocaleString()}
-							</p>
+								<div>
+									<p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+										Scanned at
+									</p>
+									<p className="mt-1 text-sm text-zinc-300">
+										{new Date(report.scannedAt).toLocaleString()}
+									</p>
+								</div>
+							</div>
 						</div>
 
 						<div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
