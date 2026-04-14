@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
 	} catch (error) {
 		console.error("OleScan analyze route error:", error);
 
-		const message = error instanceof Error ? error.message : `Unknown error: ${String(error)}`;
+		const message = getFriendlyErrorMessage(error);
 
 		return NextResponse.json(
 			{
@@ -77,4 +77,26 @@ export async function POST(request: NextRequest) {
 async function runServerDomAudit(url: string) {
 	const html = await fetchPageHtml(url);
 	return runAudit(html);
+}
+
+function getFriendlyErrorMessage(error: unknown): string {
+	if (!(error instanceof Error)) {
+		return "Something went wrong while analyzing the URL.";
+	}
+
+	const lowerMessage = error.message.toLowerCase();
+
+	if (lowerMessage.includes("timeout")) {
+		return "The scan timed out before the page finished loading.";
+	}
+
+	if (lowerMessage.includes("net::err")) {
+		return "The page could not be reached in browser mode.";
+	}
+
+	if (lowerMessage.includes("axe was not available")) {
+		return "Browser scan setup failed before accessibility analysis could begin.";
+	}
+
+	return error.message;
 }

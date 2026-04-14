@@ -16,6 +16,9 @@ type RequestState = "idle" | "loading" | "success" | "error";
 const staleReportMessage =
 	"The current report reflects the last scanned URL. Run a new scan to update the results for the edited input.";
 
+const browserModeNote =
+	"This report was generated in browser mode, which is better suited for client-rendered and dynamic pages.";
+
 // Main app page.
 // Handles the request lifecycle and renders report components when data exists.
 export default function HomePage() {
@@ -80,6 +83,7 @@ export default function HomePage() {
 
 	const hasStaleReport = report !== null && url.trim() !== report.url;
 	const shouldShowReport = requestState === "success" && report !== null;
+	const usedBrowserMode = report?.metadata.engineMode === "browser";
 
 	return (
 		<main className="min-h-screen bg-zinc-950 text-zinc-100">
@@ -120,6 +124,12 @@ export default function HomePage() {
 				{shouldShowReport && report && (
 					<section className="space-y-6">
 						<ReportMetadataPanel url={report.url} metadata={report.metadata} />
+
+						{usedBrowserMode && (
+							<div className="rounded-2xl border border-blue-800/60 bg-blue-950/20 p-6">
+								<p className="text-sm leading-6 text-blue-100">{browserModeNote}</p>
+							</div>
+						)}
 
 						<div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
 							<p className="text-sm leading-6 text-zinc-300">
