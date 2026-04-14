@@ -37,9 +37,17 @@ export async function POST(request: NextRequest) {
 		const rawResult = await runAudit(html);
 		const issues = normalizeResults(rawResult);
 
+		const totalOccurrences = issues.reduce((total, issue) => {
+			return total + issue.occurrences.length;
+		}, 0);
+
 		const report: AuditReport = {
 			url,
-			scannedAt: new Date().toISOString(),
+			metadata: {
+				engine: "axe-core + jsdom",
+				scannedAt: new Date().toISOString(),
+				totalOccurrences,
+			},
 			summary: buildSummary(issues),
 			issues,
 			manualChecks: getManualChecks(),
@@ -47,9 +55,8 @@ export async function POST(request: NextRequest) {
 
 		return NextResponse.json(report, { status: 200 });
 	} catch (error) {
-		console.error("OleScan analyze route error:", error);
-
-		const message = error instanceof Error ? error.message : `Unknown error: ${String(error)}`;
+		const message =
+			error instanceof Error ? error.message : "Something went wrong while analyzing the URL.";
 
 		return NextResponse.json(
 			{

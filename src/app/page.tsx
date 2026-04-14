@@ -6,11 +6,15 @@ import { ErrorState } from "@/components/analyzer/ErrorState";
 import { IssueList } from "@/components/analyzer/IssueList";
 import { LoadingState } from "@/components/analyzer/LoadingState";
 import { ManualChecks } from "@/components/analyzer/ManualChecks";
+import { ReportMetadataPanel } from "@/components/analyzer/ReportMetadataPanel";
 import { SummaryCards } from "@/components/analyzer/SummaryCards";
 import { UrlForm } from "@/components/analyzer/UrlForm";
 import type { AuditReport } from "@/types/audit";
 
 type RequestState = "idle" | "loading" | "success" | "error";
+
+const staleReportMessage =
+	"The current report reflects the last scanned URL. Run a new scan to update the results for the edited input.";
 
 // Main app page.
 // Handles the request lifecycle and renders report components when data exists.
@@ -61,8 +65,6 @@ export default function HomePage() {
 		}
 	}
 
-	const formattedScannedAt = report ? new Date(report.scannedAt).toLocaleString() : "";
-
 	const hasStaleReport = report !== null && url.trim() !== report.url;
 	const shouldShowReport = requestState === "success" && report !== null;
 
@@ -88,10 +90,7 @@ export default function HomePage() {
 
 				{hasStaleReport && (
 					<div className="rounded-2xl border border-yellow-800/60 bg-yellow-950/20 p-4">
-						<p className="text-sm leading-6 text-yellow-100">
-							The current report reflects the last scanned URL. Run a new scan to update the results
-							for the edited input.
-						</p>
+						<p className="text-sm leading-6 text-yellow-100">{staleReportMessage}</p>
 					</div>
 				)}
 
@@ -101,36 +100,12 @@ export default function HomePage() {
 
 				{shouldShowReport && report && (
 					<section className="space-y-6">
-						<div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
-							<h2 className="text-lg font-semibold text-zinc-100">Scan complete</h2>
-
-							<p className="mt-2 text-sm leading-6 text-zinc-400">
-								Review the scan details below to understand what was analyzed and when this report
-								was generated.
-							</p>
-
-							<div className="mt-4 space-y-3">
-								<div>
-									<p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
-										Scanned URL
-									</p>
-									<p className="mt-1 break-all text-sm text-zinc-300 sm:text-base">{report.url}</p>
-								</div>
-
-								<div>
-									<p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
-										Scanned at
-									</p>
-									<p className="mt-1 text-sm text-zinc-300">{formattedScannedAt}</p>
-								</div>
-							</div>
-						</div>
+						<ReportMetadataPanel url={report.url} metadata={report.metadata} />
 
 						<div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
 							<p className="text-sm leading-6 text-zinc-300">
-								This report is based on an automated heuristic scan. It can help surface likely
-								accessibility issues, but it does not replace manual review or formal WCAG
-								conformance testing.
+								This report is based on an automated scan. It can help surface likely accessibility
+								issues, but it does not replace manual review or formal WCAG conformance testing.
 							</p>
 						</div>
 
