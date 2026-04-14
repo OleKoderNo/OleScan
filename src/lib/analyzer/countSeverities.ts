@@ -12,20 +12,19 @@ type SeverityCounts = {
 export function countSeverities(issues: AuditIssue[]): SeverityCounts {
 	return issues.reduce<SeverityCounts>(
 		(counts, issue) => {
-			if (issue.severity === "critical") {
-				counts.criticalCount += 1;
-			}
-
-			if (issue.severity === "serious") {
-				counts.seriousCount += 1;
-			}
-
-			if (issue.severity === "moderate") {
-				counts.moderateCount += 1;
-			}
-
-			if (issue.severity === "minor") {
-				counts.minorCount += 1;
+			switch (issue.severity) {
+				case "critical":
+					counts.criticalCount += 1;
+					break;
+				case "serious":
+					counts.seriousCount += 1;
+					break;
+				case "moderate":
+					counts.moderateCount += 1;
+					break;
+				case "minor":
+					counts.minorCount += 1;
+					break;
 			}
 
 			return counts;
