@@ -2,6 +2,40 @@ import axe from "axe-core";
 import { JSDOM } from "jsdom";
 import type { RawAuditResult, Severity } from "@/types/audit";
 
+type AxeViolationNode = {
+	target: unknown[];
+	html?: string;
+	failureSummary?: string;
+};
+
+type AxeViolation = {
+	id: string;
+	impact?: string | null;
+	description: string;
+	help: string;
+	helpUrl?: string;
+	nodes: AxeViolationNode[];
+};
+
+type AxeRunResult = {
+	violations: AxeViolation[];
+};
+
+type AxeRunner = {
+	run: (context?: Document | Element) => Promise<AxeRunResult>;
+};
+
+type AxeWindowShim = {
+	axe?: AxeRunner;
+	module?: {
+		exports?: Partial<AxeRunner>;
+	};
+	exports?: unknown;
+	eval: (code: string) => unknown;
+	document: Document;
+	close: () => void;
+};
+
 const impactMap: Record<string, Severity> = {
 	critical: "critical",
 	serious: "serious",
@@ -10,30 +44,28 @@ const impactMap: Record<string, Severity> = {
 };
 
 // Runs axe-core against fetched page HTML using JSDOM.
-// This is the current real analysis engine for OleScan.
+// axe is injected into the JSDOM window and executed there.
 export async function runAudit(html: string): Promise<RawAuditResult> {
-	const dom = new JSDOM(html);
-	const { window } = dom;
+	const dom = new JSDOM(html, {
+		runScripts: "outside-only",
+	});
 
-	const previousWindow = globalThis.window;
-	const previousDocument = globalThis.document;
-	const previousNode = globalThis.Node;
-	const previousElement = globalThis.Element;
-	const previousDocumentFragment = globalThis.DocumentFragment;
-	const previousHTMLElement = globalThis.HTMLElement;
-	const previousSVGElement = globalThis.SVGElement;
+	const shimWindow = dom.window as unknown as AxeWindowShim;
 
 	try {
-		globalThis.window = window as unknown as typeof globalThis.window;
-		globalThis.document = window.document as unknown as typeof globalThis.document;
-		globalThis.Node = window.Node as unknown as typeof globalThis.Node;
-		globalThis.Element = window.Element as unknown as typeof globalThis.Element;
-		globalThis.DocumentFragment =
-			window.DocumentFragment as unknown as typeof globalThis.DocumentFragment;
-		globalThis.HTMLElement = window.HTMLElement as unknown as typeof globalThis.HTMLElement;
-		globalThis.SVGElement = window.SVGElement as unknown as typeof globalThis.SVGElement;
+		// Provide CommonJS-like globals so axe.source can attach itself safely.
+		shimWindow.module = { exports: {} };
+		shimWindow.exports = shimWindow.module.exports;
 
-		const result = await axe.run(window.document);
+		shimWindow.eval(axe.source);
+
+		const axeRunner: Partial<AxeRunner> | undefined = shimWindow.axe ?? shimWindow.module?.exports;
+
+		if (!axeRunner?.run) {
+			throw new Error("axe-core failed to initialize inside the JSDOM window.");
+		}
+
+		const result = await axeRunner.run(shimWindow.document);
 
 		return {
 			issues: result.violations.map((violation) => ({
@@ -50,14 +82,7 @@ export async function runAudit(html: string): Promise<RawAuditResult> {
 			})),
 		};
 	} finally {
-		globalThis.window = previousWindow;
-		globalThis.document = previousDocument;
-		globalThis.Node = previousNode;
-		globalThis.Element = previousElement;
-		globalThis.DocumentFragment = previousDocumentFragment;
-		globalThis.HTMLElement = previousHTMLElement;
-		globalThis.SVGElement = previousSVGElement;
-		window.close();
+		shimWindow.close();
 	}
 }
 
