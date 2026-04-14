@@ -320,6 +320,70 @@ This project exists to demonstrate:
 
 ---
 
+# Deployment Notes (Vercel Compatibility Issue)
+
+While deploying OleScan to Vercel, the server-side accessibility analyzer initially failed in production even though it worked correctly in local development.
+
+## The Problem
+
+The Server DOM scan mode relies on:
+
+- axe-core
+- jsdom
+
+During deployment, Vercel returned the following runtime error:
+
+Error [ERR_REQUIRE_ESM]: require() of ES Module encoding-lite.js from html-encoding-sniffer not supported
+
+This occurred because newer versions of `jsdom` depend on ESM-only modules through `html-encoding-sniffer` and `@exodus/bytes`.
+Vercel’s serverless runtime attempted to load these modules using CommonJS `require()`, which caused the analyzer route to crash.
+
+As a result:
+
+- `/api/analyze` failed in production
+- the frontend displayed "Unable to reach the analyzer"
+- Server DOM scanning did not work on Vercel
+- local development worked normally
+
+## The Solution
+
+The issue was resolved by pinning `jsdom` to a stable version compatible with Vercel’s runtime:
+
+jsdom: 25.0.1
+
+and overriding:
+
+parse5: 7.3.0
+
+Example configuration:
+
+"dependencies": {
+"jsdom": "25.0.1"
+},
+"overrides": {
+"parse5": "7.3.0"
+}
+
+After reinstalling dependencies and redeploying, the analyzer worked correctly in production.
+
+## Why This Matters
+
+This fix ensures:
+
+- reliable server-side accessibility analysis on Vercel
+- stable dependency resolution across environments
+- compatibility between CommonJS and ESM module loading
+- consistent behavior between local and deployed builds
+
+It also highlights an important real-world deployment challenge when combining:
+
+- Next.js route handlers
+- jsdom
+- axe-core
+- serverless runtimes
+
+---
+
 # Disclaimer
 
 OleScan provides automated accessibility insights based on structured analysis techniques.
