@@ -51,6 +51,8 @@ export default function HomePage() {
 		}
 	}
 
+	const formattedScannedAt = report ? new Date(report.scannedAt).toLocaleString() : "";
+
 	return (
 		<main className="min-h-screen bg-zinc-950 text-zinc-100">
 			<section className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-12">
@@ -97,9 +99,7 @@ export default function HomePage() {
 									<p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
 										Scanned at
 									</p>
-									<p className="mt-1 text-sm text-zinc-300">
-										{new Date(report.scannedAt).toLocaleString()}
-									</p>
+									<p className="mt-1 text-sm text-zinc-300">{formattedScannedAt}</p>
 								</div>
 							</div>
 						</div>
