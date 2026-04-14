@@ -1,10 +1,15 @@
+"use client";
+
+import { useState } from "react";
 import { EmptyState } from "@/components/analyzer/EmptyState";
 import { UrlForm } from "@/components/analyzer/UrlForm";
 
-// Home page for the first real UI step.
-// For now we render the page shell, the URL form area,
-// and the empty state before any scan has been run.
+// Home page for the first interactive UI step.
+// This version stores the entered URL in local page state,
+// but does not send it anywhere yet.
 export default function HomePage() {
+	const [submittedUrl, setSubmittedUrl] = useState("");
+
 	return (
 		<main className="min-h-screen bg-zinc-950 text-zinc-100">
 			<section className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-12">
@@ -22,11 +27,21 @@ export default function HomePage() {
 				</header>
 
 				<section className="rounded-2xl border border-zinc-800 bg-zinc-900/70 p-6 shadow-sm">
-					<UrlForm />
+					<UrlForm onSubmitUrl={setSubmittedUrl} />
 				</section>
 
-				<section>
-					<EmptyState />
+				<section className="space-y-4">
+					{submittedUrl ? (
+						<div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
+							<h2 className="text-lg font-semibold text-zinc-100">Submitted URL</h2>
+
+							<p className="mt-2 break-all text-sm text-zinc-300 sm:text-base">{submittedUrl}</p>
+
+							<p className="mt-3 text-sm text-zinc-400">API integration comes next.</p>
+						</div>
+					) : (
+						<EmptyState />
+					)}
 				</section>
 			</section>
 		</main>
