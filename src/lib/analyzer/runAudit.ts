@@ -1,4 +1,5 @@
-import axe from "axe-core";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { JSDOM } from "jsdom";
 import type { RawAuditResult, Severity } from "@/types/audit";
 
@@ -44,7 +45,7 @@ const impactMap: Record<string, Severity> = {
 };
 
 // Runs axe-core against fetched page HTML using JSDOM.
-// axe is injected into the JSDOM window and executed there.
+// axe is loaded from the installed axe.min.js bundle and executed in the JSDOM window.
 export async function runAudit(html: string): Promise<RawAuditResult> {
 	const dom = new JSDOM(html, {
 		runScripts: "outside-only",
@@ -53,10 +54,12 @@ export async function runAudit(html: string): Promise<RawAuditResult> {
 	const shimWindow = dom.window as unknown as AxeWindowShim;
 
 	try {
+		const axeSource = await loadAxeSource();
+
 		shimWindow.module = { exports: {} };
 		shimWindow.exports = shimWindow.module.exports;
 
-		shimWindow.eval(axe.source);
+		shimWindow.eval(axeSource);
 
 		const axeRunner: Partial<AxeRunner> | undefined = shimWindow.axe ?? shimWindow.module?.exports;
 
@@ -83,6 +86,12 @@ export async function runAudit(html: string): Promise<RawAuditResult> {
 	} finally {
 		shimWindow.close();
 	}
+}
+
+async function loadAxeSource(): Promise<string> {
+	const axePath = path.join(process.cwd(), "node_modules", "axe-core", "axe.min.js");
+
+	return readFile(axePath, "utf8");
 }
 
 function normalizeImpact(impact: string | null | undefined): Severity {
