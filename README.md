@@ -144,3 +144,56 @@ These reminders reinforce real-world accessibility workflows.
 The interface detects when a report becomes outdated after editing the scanned URL and prompts the user to rescan.
 
 This prevents misleading results and improves usability.
+
+---
+
+# Tech Stack
+
+Frontend:
+
+- Next.js (App Router)
+- TypeScript (strict mode)
+- Tailwind CSS
+
+Backend:
+
+- Next.js Route Handlers
+- server-side HTML fetching
+- axe-core accessibility analysis
+- jsdom DOM environment
+- Playwright browser automation
+
+Current scan engines:
+
+- axe-core + jsdom
+- axe-core + Playwright
+
+---
+
+# Architecture Overview
+
+OleScan uses a layered analyzer pipeline designed to separate responsibilities clearly.
+
+Pipeline flow:
+
+URL input  
+→ validation  
+→ engine mode selection  
+→ server DOM scan or browser scan  
+→ result normalization  
+→ severity scoring  
+→ structured report response
+
+Core modules:
+
+lib/analyzer/
+
+validateUrl.ts  
+fetchPageHtml.ts  
+runAudit.ts  
+runBrowserAudit.ts  
+normalizeResults.ts  
+buildSummary.ts  
+getManualChecks.ts
+
+Responsibilities are intentionally isolated so the audit engine can evolve independently from the UI layer.
