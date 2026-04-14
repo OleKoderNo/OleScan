@@ -30,6 +30,25 @@ export async function runAudit(html: string): Promise<RawAuditResult> {
 		});
 	}
 
+	// Check for missing lang attribute on the html element.
+	const htmlTagMatch = html.match(/<html\b[^>]*>/i);
+
+	if (!htmlTagMatch || !/\blang\s*=\s*["'][^"']+["']/i.test(htmlTagMatch[0])) {
+		issues.push({
+			id: "html-has-lang",
+			impact: "serious",
+			description: "The root html element does not appear to define a valid language.",
+			help: 'Add a lang attribute to the html element, such as lang="en".',
+			helpUrl: "https://dequeuniversity.com/rules/axe/4.10/html-has-lang",
+			nodes: [
+				{
+					target: ["html"],
+					html: htmlTagMatch?.[0] ?? "<html>",
+				},
+			],
+		});
+	}
+
 	// Check for missing main landmark.
 	if (!html.includes("<main") && !html.includes("<main ")) {
 		issues.push({
