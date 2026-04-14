@@ -51,6 +51,8 @@ export default function HomePage() {
 		}
 	}
 
+	const formattedScannedAt = report ? new Date(report.scannedAt).toLocaleString() : "";
+
 	return (
 		<main className="min-h-screen bg-zinc-950 text-zinc-100">
 			<section className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-12">
@@ -80,7 +82,26 @@ export default function HomePage() {
 						<div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
 							<h2 className="text-lg font-semibold text-zinc-100">Scan complete</h2>
 
-							<p className="mt-2 break-all text-sm text-zinc-300 sm:text-base">{report.url}</p>
+							<p className="mt-2 text-sm leading-6 text-zinc-400">
+								Review the scan details below to understand what was analyzed and when this report
+								was generated.
+							</p>
+
+							<div className="mt-4 space-y-3">
+								<div>
+									<p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+										Scanned URL
+									</p>
+									<p className="mt-1 break-all text-sm text-zinc-300 sm:text-base">{report.url}</p>
+								</div>
+
+								<div>
+									<p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+										Scanned at
+									</p>
+									<p className="mt-1 text-sm text-zinc-300">{formattedScannedAt}</p>
+								</div>
+							</div>
 						</div>
 
 						<div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">

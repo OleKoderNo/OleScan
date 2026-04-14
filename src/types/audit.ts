@@ -33,6 +33,7 @@ export type ManualCheck = {
 // Full report shape returned from the analyzer.
 export type AuditReport = {
 	url: string;
+	scannedAt: string;
 	summary: AuditSummary;
 	issues: AuditIssue[];
 	manualChecks: ManualCheck[];
