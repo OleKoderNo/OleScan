@@ -345,6 +345,10 @@ As a result:
 - Server DOM scanning did not work on Vercel
 - local development worked normally
 
+A second production issue appeared when using `axe.source` directly inside the JSDOM-based analyzer on Vercel. The analyzer failed with a runtime `ReferenceError` during `eval(...)`.
+
+This was resolved by loading `axe.min.js` directly from `node_modules` and evaluating that file content instead of relying on the bundled `axe.source` export.
+
 ## The Solution
 
 The issue was resolved by pinning `jsdom` to a stable version compatible with Vercel’s runtime:
