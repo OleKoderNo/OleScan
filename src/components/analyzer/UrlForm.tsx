@@ -4,20 +4,20 @@ import { useState } from "react";
 import { validateUrl } from "@/lib/analyzer/validateUrl";
 
 type UrlFormProps = {
+	value: string;
+	onChange: (value: string) => void;
 	onSubmitUrl: (url: string) => void;
 };
 
 // URL form with visible validation feedback.
-// Displays validation errors returned from validateUrl().
-export function UrlForm({ onSubmitUrl }: UrlFormProps) {
-	const [url, setUrl] = useState("");
+// The parent owns the input value so the page can manage scan flow more clearly.
+export function UrlForm({ value, onChange, onSubmitUrl }: UrlFormProps) {
 	const [error, setError] = useState<string | null>(null);
 
 	function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 
-		const trimmedUrl = url.trim();
-
+		const trimmedUrl = value.trim();
 		const result = validateUrl(trimmedUrl);
 
 		if (!result.isValid) {
@@ -26,7 +26,6 @@ export function UrlForm({ onSubmitUrl }: UrlFormProps) {
 		}
 
 		setError(null);
-
 		onSubmitUrl(trimmedUrl);
 	}
 
@@ -41,9 +40,9 @@ export function UrlForm({ onSubmitUrl }: UrlFormProps) {
 					id="url"
 					name="url"
 					type="url"
-					value={url}
+					value={value}
 					onChange={(event) => {
-						setUrl(event.target.value);
+						onChange(event.target.value);
 						setError(null);
 					}}
 					placeholder="https://example.com"

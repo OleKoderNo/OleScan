@@ -15,11 +15,12 @@ type RequestState = "idle" | "loading" | "success" | "error";
 // Main app page.
 // Handles the request lifecycle and renders report components when data exists.
 export default function HomePage() {
+	const [url, setUrl] = useState("");
 	const [requestState, setRequestState] = useState<RequestState>("idle");
 	const [report, setReport] = useState<AuditReport | null>(null);
 	const [errorMessage, setErrorMessage] = useState("");
 
-	async function handleSubmitUrl(url: string) {
+	async function handleSubmitUrl(submittedUrl: string) {
 		setRequestState("loading");
 		setErrorMessage("");
 		setReport(null);
@@ -30,7 +31,7 @@ export default function HomePage() {
 				headers: {
 					"Content-Type": "application/json",
 				},
-				body: JSON.stringify({ url }),
+				body: JSON.stringify({ url: submittedUrl }),
 			});
 
 			if (!response.ok) {
@@ -70,7 +71,7 @@ export default function HomePage() {
 				</header>
 
 				<section className="rounded-2xl border border-zinc-800 bg-zinc-900/70 p-6 shadow-sm">
-					<UrlForm onSubmitUrl={handleSubmitUrl} />
+					<UrlForm value={url} onChange={setUrl} onSubmitUrl={handleSubmitUrl} />
 				</section>
 
 				{requestState === "idle" && <EmptyState />}
