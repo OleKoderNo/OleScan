@@ -50,7 +50,10 @@ export function IssueList({ issues }: IssueListProps) {
 		return (
 			<section className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
 				<h2 className="text-xl font-semibold text-zinc-100">Issues</h2>
-				<p className="mt-2 text-sm text-zinc-400">No automated issues were found in this scan.</p>
+				<p className="mt-2 text-sm leading-6 text-zinc-400">
+					No automated issues were found in this scan. That is a useful signal, but it does not
+					guarantee the page is fully accessible.
+				</p>
 			</section>
 		);
 	}
@@ -61,7 +64,10 @@ export function IssueList({ issues }: IssueListProps) {
 		<section className="space-y-6">
 			<div>
 				<h2 className="text-xl font-semibold text-zinc-100">Issues</h2>
-				<p className="mt-2 text-sm text-zinc-400">Accessibility findings grouped by severity.</p>
+				<p className="mt-2 text-sm leading-6 text-zinc-400">
+					Review findings from highest to lowest severity. Start with critical and serious issues
+					first, then work through moderate and minor improvements.
+				</p>
 			</div>
 
 			{severityOrder.map((severity) => (
