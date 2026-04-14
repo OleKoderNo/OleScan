@@ -12,6 +12,11 @@ type UrlFormProps = {
 	onSubmitUrl: (url: string) => void;
 };
 
+const modeHelpTextMap: Record<AuditEngineMode, string> = {
+	"server-dom": "Faster scan based on fetched HTML and server-side DOM analysis.",
+	browser: "Slower but more realistic scan using a live browser for dynamic pages.",
+};
+
 // URL form with visible validation feedback.
 // The parent owns the input value so the page can manage scan flow more clearly.
 export function UrlForm({
@@ -82,6 +87,8 @@ export function UrlForm({
 						<option value="server-dom">Server DOM scan</option>
 						<option value="browser">Browser scan (Playwright)</option>
 					</select>
+
+					<p className="text-sm leading-6 text-zinc-400">{modeHelpTextMap[engineMode]}</p>
 				</div>
 			</div>
 
