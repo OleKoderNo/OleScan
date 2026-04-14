@@ -5,18 +5,15 @@ type ReportMetadataPanelProps = {
 	metadata: AuditMetadata;
 };
 
-function formatEngineModeLabel(engineMode: AuditMetadata["engineMode"]) {
-	if (engineMode === "browser") {
-		return "Browser";
-	}
-
-	return "Server DOM";
-}
+const engineModeLabelMap: Record<AuditMetadata["engineMode"], string> = {
+	"server-dom": "Server DOM",
+	browser: "Browser",
+};
 
 // Displays high-level metadata about the current scan.
 export function ReportMetadataPanel({ url, metadata }: ReportMetadataPanelProps) {
 	const formattedScannedAt = new Date(metadata.scannedAt).toLocaleString();
-	const engineModeLabel = formatEngineModeLabel(metadata.engineMode);
+	const engineModeLabel = engineModeLabelMap[metadata.engineMode];
 
 	return (
 		<section className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
