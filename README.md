@@ -197,3 +197,57 @@ buildSummary.ts
 getManualChecks.ts
 
 Responsibilities are intentionally isolated so the audit engine can evolve independently from the UI layer.
+
+---
+
+# AI-Assisted Development
+
+OleScan was intentionally developed using AI-assisted engineering workflows.
+
+The goal of this project is not only to demonstrate accessibility tooling, but also to demonstrate how modern developers can collaborate effectively with AI to improve productivity, iteration speed, and architectural quality.
+
+AI assistance was used for:
+
+- architectural brainstorming
+- component structure planning
+- TypeScript modeling
+- API route design
+- accessibility rule exploration
+- UX wording refinement
+- documentation drafting
+- implementation support during iteration and debugging
+
+All generated output was reviewed, validated, and adjusted manually.
+
+The project reflects a workflow where AI accelerates implementation while the developer remains responsible for:
+
+- design decisions
+- accessibility interpretation
+- system structure
+- code quality
+- correctness verification
+
+This mirrors how AI is increasingly used in professional frontend environments to improve productivity without replacing engineering judgment.
+
+---
+
+# Roadmap
+
+Short term:
+
+- add screenshots to the README
+- improve score explanation and transparency
+- expand report metadata and debugging context
+
+Mid term:
+
+- compare scan results between runs
+- support richer reporting workflows
+- improve scan accuracy for complex dynamic pages
+
+Long term:
+
+- export reports as JSON or PDF
+- CI accessibility check integration
+- accessibility regression tracking
+- developer dashboard interface
