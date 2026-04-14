@@ -251,3 +251,28 @@ Long term:
 - CI accessibility check integration
 - accessibility regression tracking
 - developer dashboard interface
+
+---
+
+# Project Goals
+
+This project exists to demonstrate:
+
+- accessibility awareness beyond automated tooling
+- strong TypeScript architecture in strict mode
+- API route design using Next.js App Router
+- reusable UI component structure
+- product-level UX thinking
+- analyzer pipeline design
+- dual-engine accessibility scanning
+- modern AI-assisted engineering workflows
+
+---
+
+# Disclaimer
+
+OleScan provides automated accessibility insights based on structured analysis techniques.
+
+It does **not** certify WCAG compliance and should be used as a development support tool alongside manual accessibility testing.
+
+Server DOM mode and browser mode may produce different results depending on how a page renders. This reflects real differences between static HTML analysis and live browser accessibility evaluation.
