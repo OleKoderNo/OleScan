@@ -1,4 +1,62 @@
-// Placeholder component for rendering a single accessibility issue.
-export function IssueCard() {
-	return null;
+import { SeverityBadge } from "@/components/analyzer/SeverityBadge";
+import type { AuditIssue } from "@/types/audit";
+
+type IssueCardProps = {
+	issue: AuditIssue;
+};
+
+// Displays one accessibility issue with context and suggested fix.
+export function IssueCard({ issue }: IssueCardProps) {
+	return (
+		<article className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-5">
+			<div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+				<div className="space-y-2">
+					<SeverityBadge severity={issue.severity} />
+
+					<h3 className="text-lg font-semibold text-zinc-100">{issue.title}</h3>
+				</div>
+			</div>
+
+			<div className="mt-4 space-y-4">
+				<div>
+					<h4 className="text-sm font-semibold text-zinc-200">Why it matters</h4>
+					<p className="mt-2 text-sm leading-6 text-zinc-300">{issue.description}</p>
+				</div>
+
+				<div>
+					<h4 className="text-sm font-semibold text-zinc-200">How to fix it</h4>
+					<p className="mt-2 text-sm leading-6 text-zinc-300">{issue.help}</p>
+				</div>
+
+				{issue.selector && (
+					<div>
+						<h4 className="text-sm font-semibold text-zinc-200">Selector</h4>
+						<code className="mt-2 block overflow-x-auto rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-300">
+							{issue.selector}
+						</code>
+					</div>
+				)}
+
+				{issue.htmlSnippet && (
+					<div>
+						<h4 className="text-sm font-semibold text-zinc-200">HTML snippet</h4>
+						<code className="mt-2 block overflow-x-auto rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-300">
+							{issue.htmlSnippet}
+						</code>
+					</div>
+				)}
+
+				{issue.helpUrl && (
+					<a
+						href={issue.helpUrl}
+						target="_blank"
+						rel="noreferrer"
+						className="inline-flex text-sm font-medium text-zinc-200 underline underline-offset-4 hover:text-zinc-100"
+					>
+						Read more about this rule
+					</a>
+				)}
+			</div>
+		</article>
+	);
 }
