@@ -28,6 +28,12 @@ export type AuditSummary = {
 	minorCount: number;
 };
 
+export type AuditMetadata = {
+	engine: string;
+	scannedAt: string;
+	totalOccurrences: number;
+};
+
 // Manual checks are reminders for things automated tools cannot fully verify.
 export type ManualCheck = {
 	id: string;
@@ -38,7 +44,7 @@ export type ManualCheck = {
 // Full report shape returned from the analyzer.
 export type AuditReport = {
 	url: string;
-	scannedAt: string;
+	metadata: AuditMetadata;
 	summary: AuditSummary;
 	issues: AuditIssue[];
 	manualChecks: ManualCheck[];
