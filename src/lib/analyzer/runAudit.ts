@@ -10,8 +10,6 @@ import type { RawAuditIssue, RawAuditResult } from "@/types/audit";
 export async function runAudit(html: string): Promise<RawAuditResult> {
 	const issues: RawAuditIssue[] = [];
 
-	// Check for missing or empty page title.
-	// We use [\s\S]*? instead of the regex s-flag so this works in stricter TS setups.
 	const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
 
 	if (!titleMatch || !titleMatch[1]?.trim()) {
@@ -30,7 +28,6 @@ export async function runAudit(html: string): Promise<RawAuditResult> {
 		});
 	}
 
-	// Check for missing lang attribute on the html element.
 	const htmlTagMatch = html.match(/<html\b[^>]*>/i);
 
 	if (!htmlTagMatch || !/\blang\s*=\s*["'][^"']+["']/i.test(htmlTagMatch[0])) {
@@ -49,7 +46,6 @@ export async function runAudit(html: string): Promise<RawAuditResult> {
 		});
 	}
 
-	// Check for missing main landmark.
 	if (!html.includes("<main") && !html.includes("<main ")) {
 		issues.push({
 			id: "landmark-one-main",
@@ -66,7 +62,6 @@ export async function runAudit(html: string): Promise<RawAuditResult> {
 		});
 	}
 
-	// Check for images without alt attributes.
 	const imageWithoutAltMatch = html.match(/<img\b(?![^>]*\balt=)[^>]*>/i);
 
 	if (imageWithoutAltMatch) {
@@ -86,7 +81,6 @@ export async function runAudit(html: string): Promise<RawAuditResult> {
 		});
 	}
 
-	// Check for buttons without visible text.
 	const buttonWithoutTextMatch = html.match(/<button[^>]*>\s*<\/button>/i);
 
 	if (buttonWithoutTextMatch) {
@@ -100,6 +94,24 @@ export async function runAudit(html: string): Promise<RawAuditResult> {
 				{
 					target: ["button"],
 					html: buttonWithoutTextMatch[0],
+				},
+			],
+		});
+	}
+
+	const emptyLinkMatch = html.match(/<a\b[^>]*href=["'][^"']+["'][^>]*>\s*<\/a>/i);
+
+	if (emptyLinkMatch) {
+		issues.push({
+			id: "link-name",
+			impact: "serious",
+			description: "A link appears to be missing visible text or another accessible name.",
+			help: "Add descriptive link text or an accessible label.",
+			helpUrl: "https://dequeuniversity.com/rules/axe/4.10/link-name",
+			nodes: [
+				{
+					target: ["a"],
+					html: emptyLinkMatch[0],
 				},
 			],
 		});

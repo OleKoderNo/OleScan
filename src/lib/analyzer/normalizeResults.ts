@@ -5,11 +5,11 @@ const ruleTitleMap: Record<string, string> = {
 	"document-title": "Documents must have a title",
 	"html-has-lang": "HTML element must have a language",
 	"image-alt": "Images must have alternative text",
+	label: "Form elements should have labels",
 	"landmark-one-main": "Document should have one main landmark",
+	"link-name": "Links must have discernible text",
 };
 
-// Converts raw audit engine output into OleScan's normalized issue format.
-// This keeps UI components independent from engine-specific data shapes.
 export function normalizeResults(result: RawAuditResult): AuditIssue[] {
 	return result.issues.map((issue) => {
 		const firstNode = issue.nodes[0];
