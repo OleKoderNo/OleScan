@@ -1,5 +1,12 @@
 # OleScan
 
+![Next.js](https://img.shields.io/badge/Next.js-App_Router-black)
+![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-Utility--First-38BDF8)
+![Accessibility](https://img.shields.io/badge/Accessibility-WCAG--Focused-2E7D32)
+![AI Assisted](https://img.shields.io/badge/Development-AI--Assisted-purple)
+![Status](https://img.shields.io/badge/Status-Active_Development-orange)
+
 OleScan is a developer-focused accessibility auditing tool that analyzes public webpages and produces structured accessibility reports with severity-based issue grouping and actionable guidance.
 
 The goal of this project is to demonstrate accessibility knowledge, frontend architecture skills, API design, and modern AI-assisted engineering workflows in a real-world portfolio application.
