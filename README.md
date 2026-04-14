@@ -128,11 +128,11 @@ Backend:
 
 - Next.js Route Handlers
 - server-side HTML fetching
-- custom heuristic accessibility engine
+- axe-core accessibility analysis
+- jsdom DOM environment
 
 Planned integrations:
 
-- axe-core
 - Playwright
 
 ---
@@ -152,7 +152,7 @@ normalizeResults.ts
 buildSummary.ts
 getManualChecks.ts
 
-Responsibilities are intentionally isolated so the audit engine can evolve independently from the UI layer.
+Responsibilities are intentionally isolated so the audit engine can evolve independently from the UI layer, including future upgrades from server-side DOM analysis to browser-based Playwright scanning.
 
 ---
 
