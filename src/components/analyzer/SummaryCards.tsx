@@ -11,6 +11,9 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
 			<div className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-4">
 				<p className="text-sm text-zinc-400">Score</p>
 				<p className="mt-2 text-2xl font-bold text-zinc-100">{summary.score}</p>
+				<p className="mt-2 text-xs leading-5 text-zinc-500">
+					OleScan starts at 100 and subtracts points based on issue severity.
+				</p>
 			</div>
 
 			<div className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-4">
