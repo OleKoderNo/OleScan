@@ -9,7 +9,7 @@ import { ManualChecks } from "@/components/analyzer/ManualChecks";
 import { ReportMetadataPanel } from "@/components/analyzer/ReportMetadataPanel";
 import { SummaryCards } from "@/components/analyzer/SummaryCards";
 import { UrlForm } from "@/components/analyzer/UrlForm";
-import type { AuditReport } from "@/types/audit";
+import type { AuditEngineMode, AuditReport } from "@/types/audit";
 
 type RequestState = "idle" | "loading" | "success" | "error";
 
@@ -20,12 +20,22 @@ const staleReportMessage =
 // Handles the request lifecycle and renders report components when data exists.
 export default function HomePage() {
 	const [url, setUrl] = useState("");
+	const [engineMode, setEngineMode] = useState<AuditEngineMode>("server-dom");
 	const [requestState, setRequestState] = useState<RequestState>("idle");
 	const [report, setReport] = useState<AuditReport | null>(null);
 	const [errorMessage, setErrorMessage] = useState("");
 
 	function handleUrlChange(nextUrl: string) {
 		setUrl(nextUrl);
+
+		if (requestState === "error") {
+			setRequestState("idle");
+			setErrorMessage("");
+		}
+	}
+
+	function handleEngineModeChange(nextMode: AuditEngineMode) {
+		setEngineMode(nextMode);
 
 		if (requestState === "error") {
 			setRequestState("idle");
@@ -44,7 +54,10 @@ export default function HomePage() {
 				headers: {
 					"Content-Type": "application/json",
 				},
-				body: JSON.stringify({ url: submittedUrl }),
+				body: JSON.stringify({
+					url: submittedUrl,
+					engineMode,
+				}),
 			});
 
 			if (!response.ok) {
@@ -85,7 +98,13 @@ export default function HomePage() {
 				</header>
 
 				<section className="rounded-2xl border border-zinc-800 bg-zinc-900/70 p-6 shadow-sm">
-					<UrlForm value={url} onChange={handleUrlChange} onSubmitUrl={handleSubmitUrl} />
+					<UrlForm
+						value={url}
+						engineMode={engineMode}
+						onChange={handleUrlChange}
+						onEngineModeChange={handleEngineModeChange}
+						onSubmitUrl={handleSubmitUrl}
+					/>
 				</section>
 
 				{hasStaleReport && (
