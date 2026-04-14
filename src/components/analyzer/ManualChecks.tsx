@@ -4,6 +4,8 @@ type ManualChecksProps = {
 	checks: ManualCheck[];
 };
 
+const manualReviewLabel = "Requires human judgment";
+
 // Displays reminders for accessibility concerns that still need human review.
 export function ManualChecks({ checks }: ManualChecksProps) {
 	return (
@@ -36,7 +38,7 @@ export function ManualChecks({ checks }: ManualChecksProps) {
 							<p className="text-sm leading-6 text-zinc-300">{check.description}</p>
 
 							<p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
-								Requires human judgment
+								{manualReviewLabel}
 							</p>
 						</div>
 					</li>
