@@ -1,152 +1,95 @@
-import type { RawAuditIssue, RawAuditResult, Severity } from "@/types/audit";
+import axe from "axe-core";
+import { JSDOM } from "jsdom";
+import type { RawAuditResult, Severity } from "@/types/audit";
 
-type RawIssueInput = {
+type AxeViolationNode = {
+	target: unknown[];
+	html?: string;
+	failureSummary?: string;
+};
+
+type AxeViolation = {
 	id: string;
-	impact: Severity;
+	impact?: string | null;
 	description: string;
 	help: string;
 	helpUrl?: string;
-	target: string;
-	html: string;
+	nodes: AxeViolationNode[];
 };
 
-// Runs the current audit engine against page HTML.
-//
-// For now, this is a lightweight temporary implementation that produces
-// structured raw issues from simple HTML checks.
-//
-// Later, this function is the place where Playwright + axe-core can be added
-// without forcing large changes to the rest of the app.
+type AxeRunResult = {
+	violations: AxeViolation[];
+};
+
+type AxeRunner = {
+	run: (context?: Document | Element) => Promise<AxeRunResult>;
+};
+
+type AxeWindowShim = {
+	axe?: AxeRunner;
+	module?: {
+		exports?: Partial<AxeRunner>;
+	};
+	exports?: unknown;
+	eval: (code: string) => unknown;
+	document: Document;
+	close: () => void;
+};
+
+const impactMap: Record<string, Severity> = {
+	critical: "critical",
+	serious: "serious",
+	moderate: "moderate",
+	minor: "minor",
+};
+
+// Runs axe-core against fetched page HTML using JSDOM.
+// axe is injected into the JSDOM window and executed there.
 export async function runAudit(html: string): Promise<RawAuditResult> {
-	const issues: RawAuditIssue[] = [];
+	const dom = new JSDOM(html, {
+		runScripts: "outside-only",
+	});
 
-	function addIssue({ id, impact, description, help, helpUrl, target, html }: RawIssueInput) {
-		issues.push({
-			id,
-			impact,
-			description,
-			help,
-			helpUrl,
-			nodes: [
-				{
-					target: [target],
-					html,
-				},
-			],
-		});
+	const shimWindow = dom.window as unknown as AxeWindowShim;
+
+	try {
+		// Provide CommonJS-like globals so axe.source can attach itself safely.
+		shimWindow.module = { exports: {} };
+		shimWindow.exports = shimWindow.module.exports;
+
+		shimWindow.eval(axe.source);
+
+		const axeRunner: Partial<AxeRunner> | undefined = shimWindow.axe ?? shimWindow.module?.exports;
+
+		if (!axeRunner?.run) {
+			throw new Error("axe-core failed to initialize inside the JSDOM window.");
+		}
+
+		const result = await axeRunner.run(shimWindow.document);
+
+		return {
+			issues: result.violations.map((violation) => ({
+				id: violation.id,
+				impact: normalizeImpact(violation.impact),
+				description: violation.description,
+				help: violation.help,
+				helpUrl: violation.helpUrl,
+				nodes: violation.nodes.map((node) => ({
+					target: node.target.map((item) => String(item)),
+					html: node.html,
+					failureSummary: node.failureSummary,
+				})),
+			})),
+		};
+	} finally {
+		shimWindow.close();
+	}
+}
+
+function normalizeImpact(impact: string | null | undefined): Severity {
+	if (!impact) {
+		return "minor";
 	}
 
-	const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
-
-	if (!titleMatch || !titleMatch[1]?.trim()) {
-		addIssue({
-			id: "document-title",
-			impact: "serious",
-			description: "The page does not appear to have a meaningful document title.",
-			help: "Add a descriptive title element inside the document head.",
-			helpUrl: "https://dequeuniversity.com/rules/axe/4.10/document-title",
-			target: "head > title",
-			html: "<title></title>",
-		});
-	}
-
-	const htmlTagMatch = html.match(/<html\b[^>]*>/i);
-
-	if (!htmlTagMatch || !/\blang\s*=\s*["'][^"']+["']/i.test(htmlTagMatch[0])) {
-		addIssue({
-			id: "html-has-lang",
-			impact: "serious",
-			description: "The root html element does not appear to define a valid language.",
-			help: 'Add a lang attribute to the html element, such as lang="en".',
-			helpUrl: "https://dequeuniversity.com/rules/axe/4.10/html-has-lang",
-			target: "html",
-			html: htmlTagMatch?.[0] ?? "<html>",
-		});
-	}
-
-	if (!html.includes("<main") && !html.includes("<main ")) {
-		addIssue({
-			id: "landmark-one-main",
-			impact: "minor",
-			description: "The page does not appear to expose a clear main landmark for navigation.",
-			help: "Wrap the primary page content in a main element.",
-			helpUrl: "https://dequeuniversity.com/rules/axe/4.10/landmark-one-main",
-			target: "body",
-			html: "<body>...</body>",
-		});
-	}
-
-	const imageWithoutAltMatch = html.match(/<img\b(?![^>]*\balt=)[^>]*>/i);
-
-	if (imageWithoutAltMatch) {
-		addIssue({
-			id: "image-alt",
-			impact: "critical",
-			description:
-				"Some images appear to be missing alternative text for assistive technology users.",
-			help: "Add descriptive alt text to informative images.",
-			helpUrl: "https://dequeuniversity.com/rules/axe/4.10/image-alt",
-			target: "img",
-			html: imageWithoutAltMatch[0],
-		});
-	}
-
-	const buttonWithoutTextMatch = html.match(/<button[^>]*>\s*<\/button>/i);
-
-	if (buttonWithoutTextMatch) {
-		addIssue({
-			id: "button-name",
-			impact: "serious",
-			description: "A button appears to be missing visible text or another accessible name.",
-			help: "Add visible text or an accessible label to the button.",
-			helpUrl: "https://dequeuniversity.com/rules/axe/4.10/button-name",
-			target: "button",
-			html: buttonWithoutTextMatch[0],
-		});
-	}
-
-	const emptyLinkMatch = html.match(/<a\b[^>]*href=["'][^"']+["'][^>]*>\s*<\/a>/i);
-
-	if (emptyLinkMatch) {
-		addIssue({
-			id: "link-name",
-			impact: "serious",
-			description: "A link appears to be missing visible text or another accessible name.",
-			help: "Add descriptive link text or an accessible label.",
-			helpUrl: "https://dequeuniversity.com/rules/axe/4.10/link-name",
-			target: "a",
-			html: emptyLinkMatch[0],
-		});
-	}
-
-	const unlabeledInputMatch = html.match(
-		/<input\b(?![^>]*\btype=["']hidden["'])(?![^>]*\baria-label=)(?![^>]*\baria-labelledby=)[^>]*>/i,
-	);
-
-	if (unlabeledInputMatch) {
-		addIssue({
-			id: "label",
-			impact: "serious",
-			description: "A form input appears to be missing an obvious accessible label.",
-			help: "Associate the input with a visible label or provide an accessible name.",
-			helpUrl: "https://dequeuniversity.com/rules/axe/4.10/label",
-			target: "input",
-			html: unlabeledInputMatch[0],
-		});
-	}
-
-	const weakAltMatch = html.match(/<img\b[^>]*\balt=["'](image|photo|picture)["'][^>]*>/i);
-
-	if (weakAltMatch) {
-		addIssue({
-			id: "alt-text-quality",
-			impact: "moderate",
-			description: "An image appears to use generic alternative text that may not be meaningful.",
-			help: "Replace generic alt text with a description that reflects the image's purpose in context.",
-			target: "img",
-			html: weakAltMatch[0],
-		});
-	}
-
-	return { issues };
+	return impactMap[impact] ?? "minor";
 }

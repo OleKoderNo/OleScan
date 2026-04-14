@@ -40,10 +40,10 @@ export type AuditReport = {
 };
 
 // Raw node target from an underlying audit engine.
-// This shape is intentionally tool-like and will later be normalized.
 export type RawAuditNode = {
 	target: string[];
 	html?: string;
+	failureSummary?: string;
 };
 
 // Raw issue from the audit engine before OleScan converts it

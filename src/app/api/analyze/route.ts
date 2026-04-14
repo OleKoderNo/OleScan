@@ -47,8 +47,9 @@ export async function POST(request: NextRequest) {
 
 		return NextResponse.json(report, { status: 200 });
 	} catch (error) {
-		const message =
-			error instanceof Error ? error.message : "Something went wrong while analyzing the URL.";
+		console.error("OleScan analyze route error:", error);
+
+		const message = error instanceof Error ? error.message : `Unknown error: ${String(error)}`;
 
 		return NextResponse.json(
 			{
