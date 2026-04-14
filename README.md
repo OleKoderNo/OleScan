@@ -21,9 +21,11 @@ Implemented:
 
 - URL validation
 - server-side HTML analysis pipeline
+- axe-core based server-side accessibility analysis
 - structured accessibility issue reporting
 - severity-based scoring model
 - grouped issue presentation
+- multiple affected elements per issue
 - manual accessibility review reminders
 - scan lifecycle states (idle, loading, success, error)
 - stale report detection when editing scanned URLs
@@ -31,12 +33,11 @@ Implemented:
 
 Planned:
 
-- deeper heuristic rule coverage
 - Playwright-based browser scanning
-- axe-core integration
 - report export options (JSON / PDF)
 - scan comparison between runs
 - accessibility scoring transparency panel
+- deeper report metadata and debugging tools
 
 ---
 
@@ -63,13 +64,19 @@ Users can submit a public webpage URL and receive a structured accessibility rep
 
 Pipeline flow:
 
-URL input
-→ validation
-→ HTML fetch
-→ audit engine
-→ result normalization
-→ severity scoring
+URL input  
+→ validation  
+→ HTML fetch  
+→ audit engine  
+→ result normalization  
+→ severity scoring  
 → structured report response
+
+## axe-core Powered Analysis
+
+OleScan now uses **axe-core** as the primary accessibility engine for automated rule detection.
+
+This gives the project a stronger and more realistic audit foundation than a custom heuristic-only approach.
 
 ## Severity-Based Issue Grouping
 
@@ -81,6 +88,18 @@ Accessibility findings are categorized into:
 - minor
 
 This helps developers prioritize fixes efficiently.
+
+## Multi-Node Issue Support
+
+A single accessibility rule can fail in multiple places on the same page.
+
+OleScan keeps and displays multiple affected elements for each issue, including:
+
+- selector
+- HTML snippet
+- failure summary when available
+
+This makes reports more useful for debugging and closer to real accessibility tooling workflows.
 
 ## Heuristic Accessibility Scoring
 
@@ -139,17 +158,29 @@ Planned integrations:
 
 # Architecture Overview
 
+# Architecture Overview
+
 OleScan uses a layered analyzer pipeline designed to separate responsibilities clearly.
+
+Pipeline flow:
+
+URL input  
+→ validation  
+→ HTML fetch  
+→ axe-core audit execution in jsdom  
+→ result normalization  
+→ severity scoring  
+→ structured report response
 
 Core modules:
 
 lib/analyzer/
 
-validateUrl.ts
-fetchPageHtml.ts
-runAudit.ts
-normalizeResults.ts
-buildSummary.ts
+validateUrl.ts  
+fetchPageHtml.ts  
+runAudit.ts  
+normalizeResults.ts  
+buildSummary.ts  
 getManualChecks.ts
 
 Responsibilities are intentionally isolated so the audit engine can evolve independently from the UI layer, including future upgrades from server-side DOM analysis to browser-based Playwright scanning.
@@ -173,9 +204,11 @@ The report score is a heuristic indicator, **not a compliance certification**.
 
 # AI-Assisted Development
 
+# AI-Assisted Development
+
 OleScan was intentionally developed using AI-assisted engineering workflows.
 
-The goal of this project is not only to demonstrate accessibility tooling, but also to demonstrate how modern developers can collaborate effectively with AI to improve productivity and architectural quality.
+The goal of this project is not only to demonstrate accessibility tooling, but also to demonstrate how modern developers can collaborate effectively with AI to improve productivity, iteration speed, and architectural quality.
 
 AI assistance was used for:
 
@@ -186,6 +219,7 @@ AI assistance was used for:
 - accessibility rule exploration
 - UX wording refinement
 - documentation drafting
+- implementation support during iteration and debugging
 
 All generated output was reviewed, validated, and adjusted manually.
 
@@ -197,7 +231,7 @@ The project reflects a workflow where AI accelerates implementation while the de
 - code quality
 - correctness verification
 
-This mirrors how AI is increasingly used in professional frontend environments to improve iteration speed without replacing engineering judgment.
+This mirrors how AI is increasingly used in professional frontend environments to improve productivity without replacing engineering judgment.
 
 ---
 
@@ -205,17 +239,16 @@ This mirrors how AI is increasingly used in professional frontend environments t
 
 Short term:
 
-- expand heuristic rule coverage
-- improve selector-level issue reporting
-- improve scoring transparency
-- refine report metadata panel
+- improve score explanation and transparency
+- expand report metadata and debugging context
+- polish issue card readability for dense results
 
 Mid term:
 
-- integrate axe-core
-- add Playwright-based scanning
-- support multi-page scanning
+- add Playwright-based browser scanning
 - compare scan results between runs
+- support richer reporting workflows
+- improve scan accuracy for dynamic pages
 
 Long term:
 
