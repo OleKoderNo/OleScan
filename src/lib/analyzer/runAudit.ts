@@ -53,7 +53,6 @@ export async function runAudit(html: string): Promise<RawAuditResult> {
 	const shimWindow = dom.window as unknown as AxeWindowShim;
 
 	try {
-		// Provide CommonJS-like globals so axe.source can attach itself safely.
 		shimWindow.module = { exports: {} };
 		shimWindow.exports = shimWindow.module.exports;
 

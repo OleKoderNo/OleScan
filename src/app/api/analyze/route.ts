@@ -4,21 +4,23 @@ import { fetchPageHtml } from "@/lib/analyzer/fetchPageHtml";
 import { getManualChecks } from "@/lib/analyzer/getManualChecks";
 import { normalizeResults } from "@/lib/analyzer/normalizeResults";
 import { runAudit } from "@/lib/analyzer/runAudit";
+import { runBrowserAudit } from "@/lib/analyzer/runBrowserAudit";
 import { validateUrl } from "@/lib/analyzer/validateUrl";
-import type { AuditReport } from "@/types/audit";
+import type { AuditEngineMode, AuditReport } from "@/types/audit";
+
+export const runtime = "nodejs";
 
 // API route for accessibility analysis.
-// Current flow:
-// 1. validate URL
-// 2. fetch page HTML
-// 3. run server-side audit engine
-// 4. normalize raw results
-// 5. build report summary
-// 6. return OleScan report
+// Supports both server DOM and browser-based audit modes.
 export async function POST(request: NextRequest) {
 	try {
-		const body = (await request.json()) as { url?: string };
+		const body = (await request.json()) as {
+			url?: string;
+			engineMode?: AuditEngineMode;
+		};
+
 		const url = body.url?.trim() ?? "";
+		const engineMode: AuditEngineMode = body.engineMode ?? "server-dom";
 
 		const validationResult = validateUrl(url);
 
@@ -33,8 +35,9 @@ export async function POST(request: NextRequest) {
 			);
 		}
 
-		const html = await fetchPageHtml(url);
-		const rawResult = await runAudit(html);
+		const rawResult =
+			engineMode === "browser" ? await runBrowserAudit(url) : await runServerDomAudit(url);
+
 		const issues = normalizeResults(rawResult);
 
 		const totalOccurrences = issues.reduce((total, issue) => {
@@ -44,8 +47,8 @@ export async function POST(request: NextRequest) {
 		const report: AuditReport = {
 			url,
 			metadata: {
-				engine: "axe-core + jsdom",
-				engineMode: "server-dom",
+				engine: engineMode === "browser" ? "axe-core + Playwright" : "axe-core + jsdom",
+				engineMode,
 				scannedAt: new Date().toISOString(),
 				totalOccurrences,
 			},
@@ -56,8 +59,9 @@ export async function POST(request: NextRequest) {
 
 		return NextResponse.json(report, { status: 200 });
 	} catch (error) {
-		const message =
-			error instanceof Error ? error.message : "Something went wrong while analyzing the URL.";
+		console.error("OleScan analyze route error:", error);
+
+		const message = error instanceof Error ? error.message : `Unknown error: ${String(error)}`;
 
 		return NextResponse.json(
 			{
@@ -68,4 +72,9 @@ export async function POST(request: NextRequest) {
 			},
 		);
 	}
+}
+
+async function runServerDomAudit(url: string) {
+	const html = await fetchPageHtml(url);
+	return runAudit(html);
 }
