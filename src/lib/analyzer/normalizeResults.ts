@@ -1,13 +1,16 @@
 import type { AuditIssue, RawAuditResult, Severity } from "@/types/audit";
 
 const ruleTitleMap: Record<string, string> = {
-	"image-alt": "Images must have alternative text",
+	"alt-text-quality": "Alternative text should be meaningful",
 	"button-name": "Buttons must have an accessible name",
+	"document-title": "Documents must have a title",
+	"html-has-lang": "HTML element must have a language",
+	"image-alt": "Images must have alternative text",
+	label: "Form elements should have labels",
 	"landmark-one-main": "Document should have one main landmark",
+	"link-name": "Links must have discernible text",
 };
 
-// Converts raw audit engine output into OleScan's normalized issue format.
-// This keeps UI components independent from engine-specific data shapes.
 export function normalizeResults(result: RawAuditResult): AuditIssue[] {
 	return result.issues.map((issue) => {
 		const firstNode = issue.nodes[0];
@@ -25,8 +28,6 @@ export function normalizeResults(result: RawAuditResult): AuditIssue[] {
 	});
 }
 
-// Converts engine severity into OleScan severity.
-// Falls back to "minor" if impact is missing.
 function normalizeSeverity(impact?: Severity): Severity {
 	if (!impact) {
 		return "minor";
@@ -35,8 +36,6 @@ function normalizeSeverity(impact?: Severity): Severity {
 	return impact;
 }
 
-// Converts rule ids into more human-friendly UI titles.
-// Falls back to a simple title formatter when no custom mapping exists.
 function formatRuleTitle(ruleId: string): string {
 	const mappedTitle = ruleTitleMap[ruleId];
 

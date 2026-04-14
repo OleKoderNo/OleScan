@@ -1,4 +1,14 @@
-import type { RawAuditIssue, RawAuditResult } from "@/types/audit";
+import type { RawAuditIssue, RawAuditResult, Severity } from "@/types/audit";
+
+type RawIssueInput = {
+	id: string;
+	impact: Severity;
+	description: string;
+	help: string;
+	helpUrl?: string;
+	target: string;
+	html: string;
+};
 
 // Runs the current audit engine against page HTML.
 //
@@ -10,60 +20,131 @@ import type { RawAuditIssue, RawAuditResult } from "@/types/audit";
 export async function runAudit(html: string): Promise<RawAuditResult> {
 	const issues: RawAuditIssue[] = [];
 
-	// Check for missing main landmark.
-	if (!html.includes("<main") && !html.includes("<main ")) {
+	function addIssue({ id, impact, description, help, helpUrl, target, html }: RawIssueInput) {
 		issues.push({
-			id: "landmark-one-main",
-			impact: "minor",
-			description: "The page does not appear to expose a clear main landmark for navigation.",
-			help: "Wrap the primary page content in a main element.",
-			helpUrl: "https://dequeuniversity.com/rules/axe/4.10/landmark-one-main",
+			id,
+			impact,
+			description,
+			help,
+			helpUrl,
 			nodes: [
 				{
-					target: ["body"],
-					html: "<body>...</body>",
+					target: [target],
+					html,
 				},
 			],
 		});
 	}
 
-	// Check for images without alt attributes.
-	// This is intentionally simple for now and will not catch everything.
+	const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+
+	if (!titleMatch || !titleMatch[1]?.trim()) {
+		addIssue({
+			id: "document-title",
+			impact: "serious",
+			description: "The page does not appear to have a meaningful document title.",
+			help: "Add a descriptive title element inside the document head.",
+			helpUrl: "https://dequeuniversity.com/rules/axe/4.10/document-title",
+			target: "head > title",
+			html: "<title></title>",
+		});
+	}
+
+	const htmlTagMatch = html.match(/<html\b[^>]*>/i);
+
+	if (!htmlTagMatch || !/\blang\s*=\s*["'][^"']+["']/i.test(htmlTagMatch[0])) {
+		addIssue({
+			id: "html-has-lang",
+			impact: "serious",
+			description: "The root html element does not appear to define a valid language.",
+			help: 'Add a lang attribute to the html element, such as lang="en".',
+			helpUrl: "https://dequeuniversity.com/rules/axe/4.10/html-has-lang",
+			target: "html",
+			html: htmlTagMatch?.[0] ?? "<html>",
+		});
+	}
+
+	if (!html.includes("<main") && !html.includes("<main ")) {
+		addIssue({
+			id: "landmark-one-main",
+			impact: "minor",
+			description: "The page does not appear to expose a clear main landmark for navigation.",
+			help: "Wrap the primary page content in a main element.",
+			helpUrl: "https://dequeuniversity.com/rules/axe/4.10/landmark-one-main",
+			target: "body",
+			html: "<body>...</body>",
+		});
+	}
+
 	const imageWithoutAltMatch = html.match(/<img\b(?![^>]*\balt=)[^>]*>/i);
 
 	if (imageWithoutAltMatch) {
-		issues.push({
+		addIssue({
 			id: "image-alt",
 			impact: "critical",
 			description:
 				"Some images appear to be missing alternative text for assistive technology users.",
 			help: "Add descriptive alt text to informative images.",
 			helpUrl: "https://dequeuniversity.com/rules/axe/4.10/image-alt",
-			nodes: [
-				{
-					target: ["img"],
-					html: imageWithoutAltMatch[0],
-				},
-			],
+			target: "img",
+			html: imageWithoutAltMatch[0],
 		});
 	}
 
-	// Check for buttons without visible text.
 	const buttonWithoutTextMatch = html.match(/<button[^>]*>\s*<\/button>/i);
 
 	if (buttonWithoutTextMatch) {
-		issues.push({
+		addIssue({
 			id: "button-name",
 			impact: "serious",
 			description: "A button appears to be missing visible text or another accessible name.",
 			help: "Add visible text or an accessible label to the button.",
 			helpUrl: "https://dequeuniversity.com/rules/axe/4.10/button-name",
-			nodes: [
-				{
-					target: ["button"],
-					html: buttonWithoutTextMatch[0],
-				},
-			],
+			target: "button",
+			html: buttonWithoutTextMatch[0],
+		});
+	}
+
+	const emptyLinkMatch = html.match(/<a\b[^>]*href=["'][^"']+["'][^>]*>\s*<\/a>/i);
+
+	if (emptyLinkMatch) {
+		addIssue({
+			id: "link-name",
+			impact: "serious",
+			description: "A link appears to be missing visible text or another accessible name.",
+			help: "Add descriptive link text or an accessible label.",
+			helpUrl: "https://dequeuniversity.com/rules/axe/4.10/link-name",
+			target: "a",
+			html: emptyLinkMatch[0],
+		});
+	}
+
+	const unlabeledInputMatch = html.match(
+		/<input\b(?![^>]*\btype=["']hidden["'])(?![^>]*\baria-label=)(?![^>]*\baria-labelledby=)[^>]*>/i,
+	);
+
+	if (unlabeledInputMatch) {
+		addIssue({
+			id: "label",
+			impact: "serious",
+			description: "A form input appears to be missing an obvious accessible label.",
+			help: "Associate the input with a visible label or provide an accessible name.",
+			helpUrl: "https://dequeuniversity.com/rules/axe/4.10/label",
+			target: "input",
+			html: unlabeledInputMatch[0],
+		});
+	}
+
+	const weakAltMatch = html.match(/<img\b[^>]*\balt=["'](image|photo|picture)["'][^>]*>/i);
+
+	if (weakAltMatch) {
+		addIssue({
+			id: "alt-text-quality",
+			impact: "moderate",
+			description: "An image appears to use generic alternative text that may not be meaningful.",
+			help: "Replace generic alt text with a description that reflects the image's purpose in context.",
+			target: "img",
+			html: weakAltMatch[0],
 		});
 	}
 
