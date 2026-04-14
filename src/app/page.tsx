@@ -81,6 +81,10 @@ export default function HomePage() {
 							<h2 className="text-lg font-semibold text-zinc-100">Scan complete</h2>
 
 							<p className="mt-2 break-all text-sm text-zinc-300 sm:text-base">{report.url}</p>
+
+							<p className="mt-3 text-sm text-zinc-500">
+								Scanned at {new Date(report.scannedAt).toLocaleString()}
+							</p>
 						</div>
 
 						<div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
