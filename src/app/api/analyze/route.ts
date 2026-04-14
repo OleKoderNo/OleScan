@@ -1,3 +1,5 @@
+export const runtime = "nodejs";
+
 import { NextRequest, NextResponse } from "next/server";
 import { buildSummary } from "@/lib/analyzer/buildSummary";
 import { fetchPageHtml } from "@/lib/analyzer/fetchPageHtml";
@@ -7,8 +9,6 @@ import { runAudit } from "@/lib/analyzer/runAudit";
 import { runBrowserAudit } from "@/lib/analyzer/runBrowserAudit";
 import { validateUrl } from "@/lib/analyzer/validateUrl";
 import type { AuditEngineMode, AuditReport } from "@/types/audit";
-
-export const runtime = "nodejs";
 
 // API route for accessibility analysis.
 // Supports both server DOM and browser-based audit modes.
