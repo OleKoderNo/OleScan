@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
 
 		return NextResponse.json(
 			{
-				message,
+				message: message || "The page could not be analyzed with the current engine configuration.",
 			},
 			{
 				status: 500,
