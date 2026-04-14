@@ -11,7 +11,8 @@ export function ManualChecks({ checks }: ManualChecksProps) {
 			<div>
 				<h2 className="text-xl font-semibold text-zinc-100">Manual review</h2>
 				<p className="mt-2 text-sm text-zinc-400">
-					Automated scans are useful, but they cannot fully verify real user experience.
+					Automated tools can detect many technical issues, but they cannot fully judge clarity,
+					usability, or real user experience.
 				</p>
 			</div>
 
