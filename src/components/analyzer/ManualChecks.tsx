@@ -1,4 +1,29 @@
-// Placeholder component for manual review reminders.
-export function ManualChecks() {
-	return null;
+import type { ManualCheck } from "@/types/audit";
+
+type ManualChecksProps = {
+	checks: ManualCheck[];
+};
+
+// Displays reminders for accessibility concerns that still need human review.
+export function ManualChecks({ checks }: ManualChecksProps) {
+	return (
+		<section className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
+			<div>
+				<h2 className="text-xl font-semibold text-zinc-100">Manual review</h2>
+				<p className="mt-2 text-sm text-zinc-400">
+					Automated scans are useful, but they cannot fully verify real user experience.
+				</p>
+			</div>
+
+			<ul className="mt-6 grid gap-4 sm:grid-cols-2">
+				{checks.map((check) => (
+					<li key={check.id} className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-4">
+						<h3 className="text-base font-semibold text-zinc-100">{check.title}</h3>
+
+						<p className="mt-2 text-sm leading-6 text-zinc-300">{check.description}</p>
+					</li>
+				))}
+			</ul>
+		</section>
+	);
 }
