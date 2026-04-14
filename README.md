@@ -7,6 +7,21 @@
 ![AI Assisted](https://img.shields.io/badge/Development-AI--Assisted-purple)
 ![Status](https://img.shields.io/badge/Status-Active_Development-orange)
 
+## Live Demo
+
+Try OleScan here:
+
+https://ole-scan.vercel.app/
+
+## Example Test URLs
+
+Try scanning:
+
+https://example.com
+https://developer.mozilla.org
+https://wikipedia.org
+https://gov.uk
+
 OleScan is a developer-focused accessibility auditing tool that analyzes public webpages and produces structured accessibility reports with severity-based issue grouping, multiple affected elements per issue, and actionable guidance.
 
 The goal of this project is to demonstrate accessibility knowledge, frontend architecture skills, API design, and modern AI-assisted engineering workflows in a real-world portfolio application.
