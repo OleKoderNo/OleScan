@@ -1,20 +1,33 @@
 "use client";
 
 import { useState } from "react";
+import { validateUrl } from "@/lib/analyzer/validateUrl";
 
 type UrlFormProps = {
 	onSubmitUrl: (url: string) => void;
 };
 
-// URL form with local input state.
-// On submit, it passes the entered URL up to the page component.
-// Validation is not added yet because that will be its own step.
+// URL form with visible validation feedback.
+// Displays validation errors returned from validateUrl().
 export function UrlForm({ onSubmitUrl }: UrlFormProps) {
 	const [url, setUrl] = useState("");
+	const [error, setError] = useState<string | null>(null);
 
 	function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault();
-		onSubmitUrl(url.trim());
+
+		const trimmedUrl = url.trim();
+
+		const result = validateUrl(trimmedUrl);
+
+		if (!result.isValid) {
+			setError(result.error ?? "Invalid URL");
+			return;
+		}
+
+		setError(null);
+
+		onSubmitUrl(trimmedUrl);
 	}
 
 	return (
@@ -29,10 +42,20 @@ export function UrlForm({ onSubmitUrl }: UrlFormProps) {
 					name="url"
 					type="url"
 					value={url}
-					onChange={(event) => setUrl(event.target.value)}
+					onChange={(event) => {
+						setUrl(event.target.value);
+						setError(null);
+					}}
 					placeholder="https://example.com"
+					aria-invalid={Boolean(error)}
 					className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm text-zinc-100 outline-none transition focus:border-zinc-500"
 				/>
+
+				{error && (
+					<p className="text-sm text-red-400" role="alert">
+						{error}
+					</p>
+				)}
 			</div>
 
 			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
