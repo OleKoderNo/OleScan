@@ -7,11 +7,11 @@ type UrlFormProps = {
 	onSubmitUrl: (url: string) => void;
 };
 
-// URL form with validation support.
-// This version integrates the shared validation utility
-// but does not yet display validation errors in the UI.
+// URL form with visible validation feedback.
+// Displays validation errors returned from validateUrl().
 export function UrlForm({ onSubmitUrl }: UrlFormProps) {
 	const [url, setUrl] = useState("");
+	const [error, setError] = useState<string | null>(null);
 
 	function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault();
@@ -19,8 +19,11 @@ export function UrlForm({ onSubmitUrl }: UrlFormProps) {
 		const result = validateUrl(url);
 
 		if (!result.isValid) {
+			setError(result.error ?? "Invalid URL");
 			return;
 		}
+
+		setError(null);
 
 		onSubmitUrl(url.trim());
 	}
@@ -39,8 +42,15 @@ export function UrlForm({ onSubmitUrl }: UrlFormProps) {
 					value={url}
 					onChange={(event) => setUrl(event.target.value)}
 					placeholder="https://example.com"
+					aria-invalid={Boolean(error)}
 					className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm text-zinc-100 outline-none transition focus:border-zinc-500"
 				/>
+
+				{error && (
+					<p className="text-sm text-red-400" role="alert">
+						{error}
+					</p>
+				)}
 			</div>
 
 			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
