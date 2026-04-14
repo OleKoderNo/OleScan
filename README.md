@@ -33,7 +33,7 @@ Implemented:
 
 Planned:
 
-- Playwright-based browser scanning
+- Playwright-based browser audit execution
 - report export options (JSON / PDF)
 - scan comparison between runs
 - accessibility scoring transparency panel
@@ -150,13 +150,11 @@ Backend:
 - axe-core accessibility analysis
 - jsdom DOM environment
 
-Planned integrations:
+Browser audit foundation:
 
 - Playwright
 
 ---
-
-# Architecture Overview
 
 # Architecture Overview
 
@@ -204,8 +202,6 @@ The report score is a heuristic indicator, **not a compliance certification**.
 
 # AI-Assisted Development
 
-# AI-Assisted Development
-
 OleScan was intentionally developed using AI-assisted engineering workflows.
 
 The goal of this project is not only to demonstrate accessibility tooling, but also to demonstrate how modern developers can collaborate effectively with AI to improve productivity, iteration speed, and architectural quality.
@@ -245,7 +241,7 @@ Short term:
 
 Mid term:
 
-- add Playwright-based browser scanning
+- connect Playwright-based browser scanning
 - compare scan results between runs
 - support richer reporting workflows
 - improve scan accuracy for dynamic pages

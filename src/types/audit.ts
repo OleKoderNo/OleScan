@@ -28,8 +28,11 @@ export type AuditSummary = {
 	minorCount: number;
 };
 
+export type AuditEngineMode = "server-dom" | "browser";
+
 export type AuditMetadata = {
 	engine: string;
+	engineMode: AuditEngineMode;
 	scannedAt: string;
 	totalOccurrences: number;
 };
@@ -68,7 +71,7 @@ export type RawAuditIssue = {
 	nodes: RawAuditNode[];
 };
 
-// Raw audit result returned by the analysis engine layer.
+// Raw audit result returned from the analysis engine layer.
 export type RawAuditResult = {
 	issues: RawAuditIssue[];
 };
