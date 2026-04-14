@@ -158,7 +158,19 @@ Planned integrations:
 
 # Architecture Overview
 
+# Architecture Overview
+
 OleScan uses a layered analyzer pipeline designed to separate responsibilities clearly.
+
+Pipeline flow:
+
+URL input  
+→ validation  
+→ HTML fetch  
+→ axe-core audit execution in jsdom  
+→ result normalization  
+→ severity scoring  
+→ structured report response
 
 Core modules:
 
@@ -171,7 +183,7 @@ normalizeResults.ts
 buildSummary.ts  
 getManualChecks.ts
 
-Responsibilities are intentionally isolated so the audit engine can evolve independently from the UI layer.
+Responsibilities are intentionally isolated so the audit engine can evolve independently from the UI layer, including future upgrades from server-side DOM analysis to browser-based Playwright scanning.
 
 ---
 
