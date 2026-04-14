@@ -18,6 +18,8 @@ const severityDescriptionMap: Record<Severity, string> = {
 	minor: "Lower-impact issues that still improve accessibility.",
 };
 
+const severityOrder: Severity[] = ["critical", "serious", "moderate", "minor"];
+
 // Renders a single severity section with its issues.
 function SeveritySection({ severity, issues }: SeveritySectionProps) {
 	if (issues.length === 0) {
@@ -62,10 +64,9 @@ export function IssueList({ issues }: IssueListProps) {
 				<p className="mt-2 text-sm text-zinc-400">Accessibility findings grouped by severity.</p>
 			</div>
 
-			<SeveritySection severity="critical" issues={groupedIssues.critical} />
-			<SeveritySection severity="serious" issues={groupedIssues.serious} />
-			<SeveritySection severity="moderate" issues={groupedIssues.moderate} />
-			<SeveritySection severity="minor" issues={groupedIssues.minor} />
+			{severityOrder.map((severity) => (
+				<SeveritySection key={severity} severity={severity} issues={groupedIssues[severity]} />
+			))}
 		</section>
 	);
 }
