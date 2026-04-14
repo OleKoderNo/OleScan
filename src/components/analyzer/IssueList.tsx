@@ -50,7 +50,10 @@ export function IssueList({ issues }: IssueListProps) {
 		return (
 			<section className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
 				<h2 className="text-xl font-semibold text-zinc-100">Issues</h2>
-				<p className="mt-2 text-sm text-zinc-400">No automated issues were found in this scan.</p>
+				<p className="mt-2 text-sm leading-6 text-zinc-400">
+					No automated issues were found in this scan. That is a useful signal, but it does not
+					guarantee the page is fully accessible.
+				</p>
 			</section>
 		);
 	}
