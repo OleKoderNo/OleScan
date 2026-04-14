@@ -80,6 +80,11 @@ export default function HomePage() {
 						<div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
 							<h2 className="text-lg font-semibold text-zinc-100">Scan complete</h2>
 
+							<p className="mt-2 text-sm leading-6 text-zinc-400">
+								Review the scan details below to understand what was analyzed and when this report
+								was generated.
+							</p>
+
 							<div className="mt-4 space-y-3">
 								<div>
 									<p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
