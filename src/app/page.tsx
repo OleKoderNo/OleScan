@@ -64,6 +64,7 @@ export default function HomePage() {
 	const formattedScannedAt = report ? new Date(report.scannedAt).toLocaleString() : "";
 
 	const hasStaleReport = report !== null && url.trim() !== report.url;
+	const shouldShowReport = requestState === "success" && report !== null;
 
 	return (
 		<main className="min-h-screen bg-zinc-950 text-zinc-100">
@@ -98,7 +99,7 @@ export default function HomePage() {
 				{requestState === "loading" && <LoadingState />}
 				{requestState === "error" && <ErrorState message={errorMessage} />}
 
-				{report && requestState === "success" && (
+				{shouldShowReport && report && (
 					<section className="space-y-6">
 						<div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
 							<h2 className="text-lg font-semibold text-zinc-100">Scan complete</h2>
