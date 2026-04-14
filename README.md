@@ -204,9 +204,11 @@ The report score is a heuristic indicator, **not a compliance certification**.
 
 # AI-Assisted Development
 
+# AI-Assisted Development
+
 OleScan was intentionally developed using AI-assisted engineering workflows.
 
-The goal of this project is not only to demonstrate accessibility tooling, but also to demonstrate how modern developers can collaborate effectively with AI to improve productivity and architectural quality.
+The goal of this project is not only to demonstrate accessibility tooling, but also to demonstrate how modern developers can collaborate effectively with AI to improve productivity, iteration speed, and architectural quality.
 
 AI assistance was used for:
 
@@ -217,6 +219,7 @@ AI assistance was used for:
 - accessibility rule exploration
 - UX wording refinement
 - documentation drafting
+- implementation support during iteration and debugging
 
 All generated output was reviewed, validated, and adjusted manually.
 
@@ -228,7 +231,7 @@ The project reflects a workflow where AI accelerates implementation while the de
 - code quality
 - correctness verification
 
-This mirrors how AI is increasingly used in professional frontend environments to improve iteration speed without replacing engineering judgment.
+This mirrors how AI is increasingly used in professional frontend environments to improve productivity without replacing engineering judgment.
 
 ---
 
@@ -245,6 +248,7 @@ Mid term:
 - add Playwright-based browser scanning
 - compare scan results between runs
 - support richer reporting workflows
+- improve scan accuracy for dynamic pages
 
 Long term:
 
